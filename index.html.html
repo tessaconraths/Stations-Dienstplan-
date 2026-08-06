@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stations-Dienstplan</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -53,7 +56,7 @@
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 06.08.2026 – Automatik 2</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -65,7 +68,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 06.08.2026 – Automatik 2</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -155,8 +158,38 @@ async function logout(){await supabaseClient.auth.signOut();currentUser=null;doc
 async function startApp(user){currentUser=user;document.getElementById('logged-in-user').textContent=user.email||'';document.getElementById('login-screen').classList.add('hidden');document.getElementById('app').classList.remove('hidden');await reloadArchiveFromSupabase()}
 async function initializeAuth(){const {data}=await supabaseClient.auth.getSession();if(data.session?.user)await startApp(data.session.user)}
 
-async function reloadArchiveFromSupabase(){setSyncStatus('Lade …');const {data,error}=await supabaseClient.from('dienstplan').select('archiv,updated_at').eq('id',1).single();if(error){setSyncStatus('Ladefehler',true);alert('Daten konnten nicht geladen werden:
-'+error.message);return}rosterArchive=data?.archiv&&typeof data.archiv==='object'?data.archiv:{};normalizeArchive();renderRosterMonthSelector();const ids=Object.keys(rosterArchive).sort().reverse();if(ids.length){const currentMonthId=getCurrentMonthId();activeRosterId=rosterArchive[currentMonthId]?currentMonthId:ids[0];loadRoster(activeRosterId,true)}else{clearCurrentRoster();showEmptyState()}setSyncStatus(data?.updated_at?'Geladen: '+new Date(data.updated_at).toLocaleString('de-DE'):'Geladen')}
+async function reloadArchiveFromSupabase(){
+    setSyncStatus('Lade …');
+    const {data,error}=await supabaseClient
+        .from('dienstplan')
+        .select('archiv,updated_at')
+        .eq('id',1)
+        .single();
+
+    if(error){
+        setSyncStatus('Ladefehler',true);
+        alert('Daten konnten nicht geladen werden:\n'+error.message);
+        return;
+    }
+
+    rosterArchive=data?.archiv&&typeof data.archiv==='object'?data.archiv:{};
+    normalizeArchive();
+
+    const ids=Object.keys(rosterArchive).sort().reverse();
+    if(ids.length){
+        const currentMonthId=getCurrentMonthId();
+        activeRosterId=rosterArchive[currentMonthId]?currentMonthId:ids[0];
+        renderRosterMonthSelector();
+        loadRoster(activeRosterId,true);
+    }else{
+        activeRosterId='';
+        renderRosterMonthSelector();
+        clearCurrentRoster();
+        showEmptyState();
+    }
+
+    setSyncStatus(data?.updated_at?'Geladen: '+new Date(data.updated_at).toLocaleString('de-DE'):'Geladen');
+}
 function normalizeArchive(){Object.values(rosterArchive).forEach(r=>{if(!r.comments||typeof r.comments!=='object')r.comments={};if(!Array.isArray(r.assignments))r.assignments=[];validateAssignmentsForRoster(r)})}
 async function saveArchiveToSupabase(){if(!currentUser)return;setSyncStatus('Speichere …');const {error}=await supabaseClient.from('dienstplan').update({archiv:rosterArchive,updated_at:new Date().toISOString()}).eq('id',1);if(error){setSyncStatus('Speicherfehler',true);alert('Speichern fehlgeschlagen:\n'+error.message);throw error}setSyncStatus('Gespeichert: '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}))}
 function queueSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveArchiveToSupabase().catch(console.error),250)}
@@ -177,17 +210,64 @@ function createId(){return'assignment-'+Date.now()+'-'+Math.random().toString(16
 
 document.getElementById('excel-upload').addEventListener('change',handleExcelUpload);
 function handleExcelUpload(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}),sheet=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(sheet,{header:1});parseOrbisRows(rows)}catch(err){console.error(err);alert('Excel-Datei konnte nicht eingelesen werden.')}finally{event.target.value=''}};reader.readAsArrayBuffer(file)}
-async function parseOrbisRows(rows){const imported={},staffSet=new Set();let currentDate=null;rows.forEach(row=>{const v1=row[1]?String(row[1]).trim():'',v3=row[3]?String(row[3]).trim():'',v6=row[6]?String(row[6]).trim():'';if(v1.includes(' ; ')&&/^\d{2}\.\d{2}\.\d{4}/.test(v1)){currentDate=v1.split(' ; ')[0].trim();imported[currentDate]??=[];return}const cleanDienst=v6.toUpperCase();if(currentDate&&v3&&v3!=='Name'&&cleanDienst&&cleanDienst!=='DIENST'&&cleanDienst!=='SBN'){const beginn=formatExcelTime(row[7]),ende=formatExcelTime(row[8]);staffSet.add(v3);imported[currentDate].push({name:v3,dienst:cleanDienst,beginn,ende,category:getShiftCategory(cleanDienst,beginn,ende),isJoker:isJokerService(cleanDienst)})}});const days=Object.keys(imported).sort(sortGermanDates);if(!days.length){alert('Keine Dienstplantage erkannt.');return}const ids=new Set(days.map(getRosterMonthId));if(ids.size>1){alert('Der Export enthält mehrere Monate. Bitte jeden Monat einzeln hochladen.');return}const id=getRosterMonthId(days[0]),label=getRosterMonthLabel(days[0]),existing=rosterArchive[id];if(existing&&!confirm(label+' ist bereits gespeichert. Soll der Dienstplan ersetzt werden? Kommentare und Zuweisungen bleiben erhalten.'))return;rosterArchive[id]={id,label,importedAt:new Date().toISOString(),rosterData:imported,allStaff:Array.from(staffSet).sort((a,b)=>a.localeCompare(b,'de')),allDays:days,comments:existing?.comments||{},assignments:existing?.assignments||[]};const conflicts=validateAssignmentsForRoster(rosterArchive[id]);activeRosterId=id;await saveArchiveToSupabase();renderRosterMonthSelector();loadRoster(id);if(conflicts.length)showAssignmentConflictAlert(conflicts,label);else alert(label+' wurde erfolgreich gespeichert.')}
+async function parseOrbisRows(rows){const imported={},staffSet=new Set();let currentDate=null;rows.forEach(row=>{const v1=row[1]?String(row[1]).trim():'',v3=row[3]?String(row[3]).trim():'',v6=row[6]?String(row[6]).trim():'';if(v1.includes(' ; ')&&/^\d{2}\.\d{2}\.\d{4}/.test(v1)){currentDate=v1.split(' ; ')[0].trim();imported[currentDate]??=[];return}const cleanDienst=v6.toUpperCase();if(currentDate&&v3&&v3!=='Name'&&cleanDienst&&cleanDienst!=='DIENST'&&cleanDienst!=='SBN'){const beginn=formatExcelTime(row[7]),ende=formatExcelTime(row[8]);staffSet.add(v3);imported[currentDate].push({name:v3,dienst:cleanDienst,beginn,ende,category:getShiftCategory(cleanDienst,beginn,ende),isJoker:isJokerService(cleanDienst)})}});const days=Object.keys(imported).sort(sortGermanDates);if(!days.length){alert('Keine Dienstplantage erkannt.');return}const ids=new Set(days.map(getRosterMonthId));if(ids.size>1){alert('Der Export enthält mehrere Monate. Bitte jeden Monat einzeln hochladen.');return}const id=getRosterMonthId(days[0]),label=getRosterMonthLabel(days[0]),existing=rosterArchive[id];if(existing&&!confirm(label+' ist bereits gespeichert. Soll der Dienstplan ersetzt werden? Kommentare und Zuweisungen bleiben erhalten.'))return;rosterArchive[id]={id,label,importedAt:new Date().toISOString(),rosterData:imported,allStaff:Array.from(staffSet).sort((a,b)=>a.localeCompare(b,'de')),allDays:days,comments:existing?.comments||{},assignments:existing?.assignments||[]};const conflicts=validateAssignmentsForRoster(rosterArchive[id]);activeRosterId=id;await saveArchiveToSupabase();renderRosterMonthSelector();loadRoster(id,true);if(conflicts.length)showAssignmentConflictAlert(conflicts,label);else alert(label+' wurde erfolgreich gespeichert.')}
 
 function validateAssignmentsForRoster(roster){const conflicts=[];roster.assignments=(roster.assignments||[]);roster.assignments.forEach(a=>{a.status='valid';a.conflictReason='';const shifts=roster.rosterData[a.date];if(!shifts){a.status='date-missing';a.conflictReason='Datum ist im neuen Export nicht mehr enthalten.';conflicts.push(a);return}const s=shifts.find(x=>x.name===a.staffName);if(!s){a.status='staff-missing';a.conflictReason='Mitarbeiter ist an diesem Tag nicht mehr im Dienst.';conflicts.push(a);return}if(s.category!==a.shiftCategory){a.status='wrong-shift';a.conflictReason='Mitarbeiter ist nun im '+getShiftLabel(s.category)+' statt im '+getShiftLabel(a.shiftCategory)+'.';conflicts.push(a)}});return conflicts}
 function showAssignmentConflictAlert(conflicts,label){alert('Konflikte bei Gruppen und Sonderaufgaben\n\n'+label+'\n\n'+conflicts.map(a=>a.date+' – '+a.title+'\n'+a.staffName+': '+a.conflictReason).join('\n\n')+'\n\nBitte im Leitungs-Bereich prüfen.')}
 
 function renderRosterMonthSelector(){const s=document.getElementById('roster-month-selector');s.innerHTML='';const rs=Object.values(rosterArchive).sort((a,b)=>b.id.localeCompare(a.id));if(!rs.length){s.innerHTML='<option value="">Kein Monat gespeichert</option>';s.disabled=true;return}s.disabled=false;rs.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.label;s.appendChild(o)});if(activeRosterId&&rosterArchive[activeRosterId])s.value=activeRosterId;else activeRosterId=rs[0].id}
 function loadSelectedRoster(){const id=document.getElementById('roster-month-selector').value;if(id)loadRoster(id,true)}
-function getTodayGerman(){const now=new Date();return String(now.getDate()).padStart(2,'0')+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+now.getFullYear()}
-function getCurrentMonthId(){const now=new Date();return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')}
-function getDefaultDisplayDay(){if(!allDays.length)return '';const today=getTodayGerman();if(allDays.includes(today))return today;const todayDate=parseGermanDate(today);const pastDays=allDays.filter(day=>{const d=parseGermanDate(day);return d&&d<=todayDate});if(pastDays.length)return pastDays[pastDays.length-1];return allDays[0]}
-function loadRoster(id,useAutomaticDay=false){const r=rosterArchive[id];if(!r){showEmptyState();return}activeRosterId=id;rosterData=r.rosterData||{};allStaff=r.allStaff||[];allDays=r.allDays||[];dayComments=r.comments||{};assignments=r.assignments||[];weekChunks=[];for(let i=0;i<allDays.length;i+=7)weekChunks.push(allDays.slice(i,i+7));document.getElementById('roster-month-selector').value=id;fillSelectors();if(useAutomaticDay){const defaultDay=getDefaultDisplayDay();if(defaultDay)document.getElementById('day-selector').value=defaultDay}hideEmptyState();renderAssignmentManager();renderCommentManagerTable();cancelAssignmentEdit();currentView='day';switchView('day')}
+function getTodayGerman(){
+    const now=new Date();
+    return String(now.getDate()).padStart(2,'0')+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+now.getFullYear();
+}
+function getCurrentMonthId(){
+    const now=new Date();
+    return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+}
+function getDefaultDisplayDay(){
+    if(!allDays.length)return '';
+    const sortedDays=allDays.slice().sort(sortGermanDates);
+    const today=getTodayGerman();
+    if(sortedDays.includes(today))return today;
+
+    const todayDate=parseGermanDate(today);
+    const futureDays=sortedDays.filter(day=>{
+        const d=parseGermanDate(day);
+        return d&&d>todayDate;
+    });
+    if(futureDays.length)return futureDays[0];
+
+    return sortedDays[sortedDays.length-1];
+}
+function loadRoster(id,useAutomaticDay=false){
+    const r=rosterArchive[id];
+    if(!r){showEmptyState();return;}
+
+    activeRosterId=id;
+    rosterData=r.rosterData||{};
+    allStaff=r.allStaff||[];
+    allDays=(r.allDays||[]).slice().sort(sortGermanDates);
+    dayComments=r.comments||{};
+    assignments=r.assignments||[];
+    weekChunks=[];
+    for(let i=0;i<allDays.length;i+=7)weekChunks.push(allDays.slice(i,i+7));
+
+    fillSelectors();
+    document.getElementById('roster-month-selector').value=id;
+
+    if(useAutomaticDay){
+        const defaultDay=getDefaultDisplayDay();
+        if(defaultDay)document.getElementById('day-selector').value=defaultDay;
+    }
+
+    hideEmptyState();
+    renderAssignmentManager();
+    renderCommentManagerTable();
+    cancelAssignmentEdit();
+    currentView='day';
+    switchView('day');
+}
 function fillSelectors(){const sels=['day-selector','range-start','range-end','assignment-date'].map(id=>document.getElementById(id));sels.forEach(s=>s.innerHTML='');allDays.forEach(day=>{const label=getWeekdayLabel(day)+', '+day;sels.forEach(s=>{const o=document.createElement('option');o.value=day;o.textContent=label;s.appendChild(o)})});const w=document.getElementById('week-selector');w.innerHTML='';weekChunks.forEach((c,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent='Woche '+(i+1)+': '+c[0]+' – '+c[c.length-1];w.appendChild(o)});if(allDays.length){document.getElementById('day-selector').value=allDays[0];document.getElementById('range-start').value=allDays[0];document.getElementById('range-end').value=allDays[allDays.length-1];document.getElementById('assignment-date').value=allDays[0]}updateAssignmentStaffOptions()}
 
 function updateAssignmentStaffOptions(preferred=''){const date=document.getElementById('assignment-date').value,cat=document.getElementById('assignment-shift').value,s=document.getElementById('assignment-staff');s.innerHTML='';const list=(rosterData[date]||[]).filter(x=>x.category===cat).sort((a,b)=>a.name.localeCompare(b.name,'de'));if(!list.length){s.innerHTML='<option value="">Kein Mitarbeiter in dieser Schicht</option>';s.disabled=true;return}s.disabled=false;list.forEach(x=>{const o=document.createElement('option');o.value=x.name;o.textContent=x.name+' – '+x.dienst+' ('+x.beginn+'–'+x.ende+')';s.appendChild(o)});if(preferred&&list.some(x=>x.name===preferred))s.value=preferred}
