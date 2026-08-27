@@ -72,7 +72,7 @@
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil ohne Feiertage</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil 3</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -85,7 +85,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil ohne Feiertage</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil 3</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -202,7 +202,6 @@ let passwordFlowRequired=false;
 
 let rosterArchive={}, activeRosterId='', rosterData={}, allStaff=[], allDays=[], weekChunks=[], dayComments={}, assignments=[];
 let currentView='day', editingAssignmentId=null, currentUser=null, saveTimer=null;
-let holidayPreferences={}, editingHolidayId=null;
 
 function setSyncStatus(text,isError=false){const el=document.getElementById('sync-status');el.textContent=text;el.classList.toggle('error',isError)}
 async function login(){
@@ -309,45 +308,61 @@ async function initializeAuth(){
 
 
 function getRosterMonthIds(){return Object.keys(rosterArchive).filter(id=>/^\d{4}-\d{2}$/.test(id)).sort()}
-function getHolidayStore(){
-  if(!rosterArchive.__holidayPlanning||typeof rosterArchive.__holidayPlanning!=='object')rosterArchive.__holidayPlanning={};
-  return rosterArchive.__holidayPlanning;
-}
 
 async function reloadArchiveFromSupabase(){
     setSyncStatus('Lade …');
-    const {data,error}=await supabaseClient
-        .from('dienstplan')
-        .select('archiv,updated_at')
-        .eq('id',1)
-        .single();
+    try{
+        const {data,error}=await supabaseClient
+            .from('dienstplan')
+            .select('archiv,updated_at')
+            .eq('id',1)
+            .single();
 
-    if(error){
+        if(error)throw error;
+
+        rosterArchive=data?.archiv&&typeof data.archiv==='object'?data.archiv:{};
+        normalizeArchive();
+
+        const ids=getRosterMonthIds().slice().reverse();
+        if(ids.length){
+            const currentMonthId=getCurrentMonthId();
+            activeRosterId=rosterArchive[currentMonthId]?currentMonthId:ids[0];
+            renderRosterMonthSelector();
+            loadRoster(activeRosterId,true);
+        }else{
+            activeRosterId='';
+            renderRosterMonthSelector();
+            clearCurrentRoster();
+            showEmptyState();
+        }
+
+        setSyncStatus(data?.updated_at?'Geladen: '+new Date(data.updated_at).toLocaleString('de-DE'):'Geladen');
+    }catch(err){
+        console.error('Fehler beim Laden der App:',err);
         setSyncStatus('Ladefehler',true);
-        alert('Daten konnten nicht geladen werden:\n'+error.message);
-        return;
+        document.getElementById('current-date-display').textContent='Dienstplan konnte nicht vollständig geladen werden';
+        alert('Fehler beim Laden der App:\n'+(err?.message||String(err)));
     }
-
-    rosterArchive=data?.archiv&&typeof data.archiv==='object'?data.archiv:{};
-    normalizeArchive();
-
-    holidayPreferences=getHolidayStore();
-    const ids=getRosterMonthIds().slice().reverse();
-    if(ids.length){
-        const currentMonthId=getCurrentMonthId();
-        activeRosterId=rosterArchive[currentMonthId]?currentMonthId:ids[0];
-        renderRosterMonthSelector();
-        loadRoster(activeRosterId,true);
-    }else{
-        activeRosterId='';
-        renderRosterMonthSelector();
-        clearCurrentRoster();
-        showEmptyState();
-    }
-
-    setSyncStatus(data?.updated_at?'Geladen: '+new Date(data.updated_at).toLocaleString('de-DE'):'Geladen');
 }
-function normalizeArchive(){getRosterMonthIds().forEach(id=>{const r=rosterArchive[id];if(!r.comments||typeof r.comments!=='object')r.comments={};if(!Array.isArray(r.assignments))r.assignments=[];Object.values(r.rosterData||{}).forEach(shifts=>(shifts||[]).forEach(shift=>{shift.isJoker=isJokerService(shift.dienst);if(!shift.category)shift.category=getShiftCategory(shift.dienst,shift.beginn,shift.ende)}));validateAssignmentsForRoster(r)});holidayPreferences=getHolidayStore()}
+function normalizeArchive(){
+    getRosterMonthIds().forEach(id=>{
+        const r=rosterArchive[id];
+        if(!r||typeof r!=='object')return;
+        if(!r.comments||typeof r.comments!=='object')r.comments={};
+        if(!Array.isArray(r.assignments))r.assignments=[];
+        if(!Array.isArray(r.allDays))r.allDays=Object.keys(r.rosterData||{}).sort(sortGermanDates);
+        if(!Array.isArray(r.allStaff)){
+            const names=new Set();
+            Object.values(r.rosterData||{}).forEach(shifts=>(shifts||[]).forEach(shift=>{if(shift?.name)names.add(shift.name)}));
+            r.allStaff=Array.from(names).sort((a,b)=>a.localeCompare(b,'de'));
+        }
+        Object.values(r.rosterData||{}).forEach(shifts=>(shifts||[]).forEach(shift=>{
+            shift.isJoker=isJokerService(shift.dienst);
+            shift.category=getShiftCategory(shift.dienst,shift.beginn,shift.ende);
+        }));
+        validateAssignmentsForRoster(r);
+    });
+}
 async function saveArchiveToSupabase(){if(!currentUser)return;setSyncStatus('Speichere …');const {error}=await supabaseClient.from('dienstplan').update({archiv:rosterArchive,updated_at:new Date().toISOString()}).eq('id',1);if(error){setSyncStatus('Speicherfehler',true);alert('Speichern fehlgeschlagen:\n'+error.message);throw error}setSyncStatus('Gespeichert: '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}))}
 function queueSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveArchiveToSupabase().catch(console.error),250)}
 
@@ -503,7 +518,35 @@ function createShiftCard(shift,date){const card=document.createElement('div');ca
 function sortShiftsByStartTime(a,b){const x=timeToMinutes(a.beginn),y=timeToMinutes(b.beginn);if(x===null&&y===null)return a.name.localeCompare(b.name,'de');if(x===null)return 1;if(y===null)return-1;return x-y||a.name.localeCompare(b.name,'de')}
 function appendShiftCard(shift,c,date){const card=createShiftCard(shift,date);if(shift.category==='frueh')c.frueh.appendChild(card);else if(shift.category==='spaet')c.spaet.appendChild(card);else if(shift.category==='nacht')c.nacht.appendChild(card);else c.tag.appendChild(card)}
 
-function renderSelectedDay(){const day=document.getElementById('day-selector').value;if(!day||!rosterData[day])return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Tagesplan: '+getWeekdayLabel(day)+', '+day;const cb=document.getElementById('comment-box');if(dayComments[day]){document.getElementById('comment-text').textContent=dayComments[day];cb.style.display='block'}else cb.style.display='none';const c={frueh:document.getElementById('list-frueh'),tag:document.getElementById('list-tag'),spaet:document.getElementById('list-spaet'),nacht:document.getElementById('list-nacht')};Object.values(c).forEach(x=>x.innerHTML='');rosterData[day].slice().sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))}
+function renderSelectedDay(){
+    let day=document.getElementById('day-selector').value;
+    if(!day||!rosterData[day]){
+        day=getDefaultDisplayDay()||allDays[0]||'';
+        if(day)document.getElementById('day-selector').value=day;
+    }
+    if(!day||!rosterData[day])return;
+
+    syncWeekToSelectedDay();
+    document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Tagesplan: '+getWeekdayLabel(day)+', '+day;
+
+    const cb=document.getElementById('comment-box');
+    if(dayComments[day]){
+        document.getElementById('comment-text').textContent=dayComments[day];
+        cb.style.display='block';
+    }else{
+        document.getElementById('comment-text').textContent='';
+        cb.style.display='none';
+    }
+
+    const c={
+        frueh:document.getElementById('list-frueh'),
+        tag:document.getElementById('list-tag'),
+        spaet:document.getElementById('list-spaet'),
+        nacht:document.getElementById('list-nacht')
+    };
+    Object.values(c).forEach(x=>x.innerHTML='');
+    rosterData[day].slice().sort(sortShiftsByStartTime).forEach(shift=>appendShiftCard(shift,c,day));
+}
 function renderSelectedWeek(){
     if(!weekChunks.length)return;
     const selector=document.getElementById('week-selector');
