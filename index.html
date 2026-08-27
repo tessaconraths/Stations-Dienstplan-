@@ -33,7 +33,7 @@
     button:disabled{opacity:.55;cursor:not-allowed}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}
     .btn-secondary{background:#e5e7eb;color:#374151}.btn-secondary:hover{background:#d1d5db}.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:var(--danger-hover)}
     .btn-small{padding:5px 9px;font-size:.78rem}.btn-active{background:#1e40af;color:#fff}
-    .sync-status{font-size:.78rem;padding:5px 8px;border-radius:999px;background:#eef2ff;color:#3730a3}.sync-status.error{background:#fee2e2;color:#991b1b}
+    .sync-status{font-size:.78rem;padding:5px 8px;border-radius:999px;background:#eef2ff;color:#3730a3}.sync-status.error{background:#fee2e2;color:#991b1b}.joker-toggle{display:flex;align-items:center;gap:6px;padding:6px 9px;border-radius:8px;background:#ecfdf5;color:#065f46;font-size:.82rem;font-weight:700}.joker-toggle input{margin:0;accent-color:#0d9488}
     #admin-panel{display:none;background:#eff6ff;border:2px dashed #93c5fd;padding:20px;border-radius:12px;margin-bottom:20px}
     .admin-box{background:#fff;padding:15px;border-radius:8px;margin-top:15px;border:1px solid #dbeafe;box-shadow:0 1px 3px rgba(0,0,0,.05)}
     .admin-box h4{margin:0 0 12px}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end}.form-field{display:flex;flex-direction:column;gap:4px}.form-field label{font-size:.8rem;font-weight:600;color:#475569}
@@ -49,6 +49,14 @@
     .month-view{display:none;overflow-x:auto;background:#fff;padding:15px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}table{width:100%;border-collapse:collapse;font-size:.8rem}th,td{border:1px solid var(--border);padding:6px 8px;text-align:center;white-space:nowrap}th{background:#f8fafc;position:sticky;top:0;z-index:2}td.staff-name{text-align:left;font-weight:600;position:sticky;left:0;background:#fff;z-index:1}
     .assignment-table-wrapper{max-height:380px;overflow:auto}.conflict-row{background:#fee2e2}.valid-row{background:#f0fdf4}.status-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:.72rem;font-weight:700}.status-valid{background:#dcfce7;color:#166534}.status-conflict{background:#fee2e2;color:#991b1b}.conflict-text{max-width:340px;white-space:normal;color:#991b1b;font-weight:600}
     #comment-manager-table input{width:100%}
+    .joker-report{display:none;background:#fff;padding:18px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+    .joker-report-toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px}
+    .joker-report-toolbar .form-field{min-width:170px}
+    .joker-summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0 16px}
+    .joker-summary-card{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:12px}
+    .joker-summary-card strong{display:block;font-size:1.45rem;color:#065f46;margin-top:3px}
+    .joker-report table td:first-child{text-align:left;font-weight:600}
+    .joker-total-row{font-weight:800;background:#f1f5f9}
     .login-link{width:100%;margin-top:8px;background:transparent!important;color:var(--primary)!important;padding:7px!important;text-decoration:underline;font-weight:600}
     .password-modal{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.58);display:grid;place-items:center;padding:18px}
     .password-modal-card{width:min(430px,100%);background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
@@ -56,13 +64,13 @@
     .password-modal-card input,.password-modal-card button{width:100%;margin-top:9px;padding:11px;border-radius:8px;font-size:1rem}.password-modal-card input{border:1px solid #cbd5e1}
     .password-message{margin-top:10px;white-space:pre-wrap;font-size:.9rem}.password-message.error{color:#b91c1c}.password-message.success{color:#166534}
     @media(max-width:700px){body{padding:10px}.header{padding:12px}.nav-buttons{width:100%}.nav-buttons select,.nav-buttons button{flex:1 1 auto}.day-view{grid-template-columns:1fr}}
-    @media print{body{padding:0;background:#fff}.header,#admin-panel,.no-print,#empty-state{display:none!important}.shift-group,.week-day-column{box-shadow:none;border:1px solid #ccc}.day-view{grid-template-columns:repeat(4,1fr)}.week-view{grid-template-columns:repeat(7,1fr);gap:6px}@page{size:A4 landscape;margin:.8cm}}
+    @media print{body{padding:0;background:#fff}.header,#admin-panel,.no-print,#empty-state{display:none!important}.shift-group,.week-day-column{box-shadow:none;border:1px solid #ccc}.day-view{grid-template-columns:repeat(4,1fr)}.week-view{grid-template-columns:repeat(7,1fr);gap:6px}body.print-joker-report #day-view-container,body.print-joker-report #week-view-container,body.print-joker-report #month-view-container,body.print-joker-report #comment-box{display:none!important}body.print-joker-report #joker-report-container{display:block!important;box-shadow:none;padding:0}body.print-joker-report #joker-report-container table{font-size:10pt}@page{size:A4 landscape;margin:.8cm}}
   </style>
 </head>
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 25.08.2026 – Passwortverwaltung</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Joker-Abrechnung</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -75,17 +83,19 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 25.08.2026 – Passwortverwaltung</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Joker-Abrechnung</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
         <span id="sync-status" class="sync-status">Bereit</span>
+        <label class="joker-toggle" title="JF/JSD in den Dienstansichten ein- oder ausblenden"><input id="show-jokers-toggle" type="checkbox" checked onchange="toggleJokerVisibility()"> Jokerdienste anzeigen</label>
         <select id="roster-month-selector" onchange="loadSelectedRoster()"><option value="">Kein Monat gespeichert</option></select>
         <select id="day-selector" onchange="renderSelectedDay()"></select>
         <select id="week-selector" onchange="renderSelectedWeek()" style="display:none"></select>
         <button id="btn-day" class="btn-primary" onclick="switchView('day')">Tagesansicht</button>
         <button id="btn-week" class="btn-secondary" onclick="switchView('week')">Wochenansicht</button>
         <button id="btn-month" class="btn-secondary" onclick="switchView('month')">Monatsansicht</button>
+        <button id="btn-joker" class="btn-secondary" onclick="switchView('joker')">Joker-Auswertung</button>
         <button class="btn-secondary" onclick="window.print()">Drucken</button>
         <button class="btn-secondary" onclick="toggleAdmin()">Leitungs-Bereich</button>
         <button class="btn-secondary" onclick="reloadArchiveFromSupabase()">Neu laden</button>
@@ -150,6 +160,22 @@
     <div id="day-view-container" class="day-view" style="display:none"><div class="shift-group"><h3>Frühdienst</h3><div id="list-frueh"></div></div><div class="shift-group"><h3>Tag-/Zwischendienst</h3><div id="list-tag"></div></div><div class="shift-group"><h3>Spätdienst</h3><div id="list-spaet"></div></div><div class="shift-group"><h3>Nachtdienst & Sonstige</h3><div id="list-nacht"></div></div></div>
     <div id="week-view-container" class="week-view"></div>
     <div id="month-view-container" class="month-view"><table><thead><tr id="month-header-row"><th>Mitarbeiter</th></tr></thead><tbody id="month-body-rows"></tbody></table></div>
+    <div id="joker-report-container" class="joker-report">
+      <h2 style="margin-top:0">Jokerdienste – Auswertung für die Buchhaltung</h2>
+      <div class="joker-report-toolbar no-print">
+        <div class="form-field"><label>Von Monat</label><select id="joker-from-month" onchange="renderJokerReport()"></select></div>
+        <div class="form-field"><label>Bis Monat</label><select id="joker-to-month" onchange="renderJokerReport()"></select></div>
+        <button class="btn-primary" onclick="exportJokerReportXlsx()">Als Excel ausgeben</button>
+        <button class="btn-secondary" onclick="printJokerReport()">Auswertung drucken</button>
+      </div>
+      <div id="joker-report-period" style="font-weight:700;margin-bottom:8px"></div>
+      <div class="joker-summary-cards">
+        <div class="joker-summary-card">JF gesamt<strong id="joker-total-jf">0</strong></div>
+        <div class="joker-summary-card">JSD gesamt<strong id="joker-total-jsd">0</strong></div>
+        <div class="joker-summary-card">Jokerdienste gesamt<strong id="joker-total-all">0</strong></div>
+      </div>
+      <div style="overflow-x:auto"><table id="joker-report-table"><thead><tr><th>Mitarbeiter</th><th>JF</th><th>JSD</th><th>Gesamt</th></tr></thead><tbody id="joker-report-body"></tbody></table></div>
+    </div>
   </main>
 
   <div id="password-modal" class="password-modal hidden" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
@@ -173,6 +199,7 @@ let passwordFlowRequired=false;
 
 let rosterArchive={}, activeRosterId='', rosterData={}, allStaff=[], allDays=[], weekChunks=[], dayComments={}, assignments=[];
 let currentView='day', editingAssignmentId=null, currentUser=null, saveTimer=null;
+let showJokers=true;
 
 function setSyncStatus(text,isError=false){const el=document.getElementById('sync-status');el.textContent=text;el.classList.toggle('error',isError)}
 async function login(){
@@ -309,7 +336,7 @@ async function reloadArchiveFromSupabase(){
 
     setSyncStatus(data?.updated_at?'Geladen: '+new Date(data.updated_at).toLocaleString('de-DE'):'Geladen');
 }
-function normalizeArchive(){Object.values(rosterArchive).forEach(r=>{if(!r.comments||typeof r.comments!=='object')r.comments={};if(!Array.isArray(r.assignments))r.assignments=[];validateAssignmentsForRoster(r)})}
+function normalizeArchive(){Object.values(rosterArchive).forEach(r=>{if(!r.comments||typeof r.comments!=='object')r.comments={};if(!Array.isArray(r.assignments))r.assignments=[];Object.values(r.rosterData||{}).forEach(shifts=>(shifts||[]).forEach(shift=>{shift.isJoker=isJokerService(shift.dienst);if(!shift.category)shift.category=getShiftCategory(shift.dienst,shift.beginn,shift.ende)}));validateAssignmentsForRoster(r)})}
 async function saveArchiveToSupabase(){if(!currentUser)return;setSyncStatus('Speichere …');const {error}=await supabaseClient.from('dienstplan').update({archiv:rosterArchive,updated_at:new Date().toISOString()}).eq('id',1);if(error){setSyncStatus('Speicherfehler',true);alert('Speichern fehlgeschlagen:\n'+error.message);throw error}setSyncStatus('Gespeichert: '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}))}
 function queueSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveArchiveToSupabase().catch(console.error),250)}
 
@@ -398,24 +425,92 @@ async function deleteAssignment(id){const a=assignments.find(x=>x.id===id);if(!a
 function renderAssignmentManager(){const b=document.getElementById('assignment-manager-body');b.innerHTML='';if(!assignments.length){b.innerHTML='<tr><td colspan="7">Noch keine Zuweisungen vorhanden.</td></tr>';return}assignments.slice().sort((a,b)=>sortGermanDates(a.date,b.date)||a.staffName.localeCompare(b.staffName,'de')).forEach(a=>{const tr=document.createElement('tr'),valid=a.status==='valid';tr.className=valid?'valid-row':'conflict-row';tr.innerHTML='<td>'+escapeHtml(a.date)+'</td><td>'+escapeHtml(getShiftLabel(a.shiftCategory))+'</td><td>'+escapeHtml(a.staffName)+'</td><td>'+escapeHtml(a.title)+'</td><td>'+escapeHtml(a.time||'–')+'</td><td>'+(valid?'<span class="status-badge status-valid">Gültig</span>':'<span class="status-badge status-conflict">Prüfen</span><div class="conflict-text">'+escapeHtml(a.conflictReason)+'</div>')+'</td><td><button class="btn-secondary btn-small" onclick="editAssignment(\''+a.id+'\')">Bearbeiten</button> <button class="btn-danger btn-small" onclick="deleteAssignment(\''+a.id+'\')">Löschen</button></td>';b.appendChild(tr)})}
 function getAssignmentsForStaff(date,name,cat){return assignments.filter(a=>a.date===date&&a.staffName===name&&a.shiftCategory===cat)}
 function getAssignmentDisplayHtml(date,name,cat){return getAssignmentsForStaff(date,name,cat).map(a=>'<span class="assignment-inline"> – '+escapeHtml(a.title)+(a.time?' '+escapeHtml(a.time)+' Uhr':'')+'</span>').join('')}
+function shouldDisplayShift(shift){return showJokers||!isJokerService(shift?.dienst)}
+function toggleJokerVisibility(){showJokers=document.getElementById('show-jokers-toggle')?.checked!==false;renderCurrentViews()}
 function createShiftCard(shift,date){const card=document.createElement('div');card.className=shift.isJoker?'shift-card type-joker':'shift-card type-'+shift.category;const short=shift.name.split(',')[0].trim(),extra=getAssignmentDisplayHtml(date,shift.name,shift.category),time=shift.beginn&&shift.ende?shift.beginn+' – '+shift.ende:'Keine Uhrzeit hinterlegt';card.innerHTML='<div class="shift-card-top"><span class="shift-name">'+escapeHtml(short)+extra+'</span><span class="shift-badge">'+escapeHtml(shift.dienst)+'</span></div><div class="shift-time">'+escapeHtml(time)+'</div>';return card}
 function sortShiftsByStartTime(a,b){const x=timeToMinutes(a.beginn),y=timeToMinutes(b.beginn);if(x===null&&y===null)return a.name.localeCompare(b.name,'de');if(x===null)return 1;if(y===null)return-1;return x-y||a.name.localeCompare(b.name,'de')}
 function appendShiftCard(shift,c,date){const card=createShiftCard(shift,date);if(shift.category==='frueh')c.frueh.appendChild(card);else if(shift.category==='spaet')c.spaet.appendChild(card);else if(shift.category==='nacht')c.nacht.appendChild(card);else c.tag.appendChild(card)}
 
-function renderSelectedDay(){const day=document.getElementById('day-selector').value;if(!day||!rosterData[day])return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Tagesplan: '+getWeekdayLabel(day)+', '+day;const cb=document.getElementById('comment-box');if(dayComments[day]){document.getElementById('comment-text').textContent=dayComments[day];cb.style.display='block'}else cb.style.display='none';const c={frueh:document.getElementById('list-frueh'),tag:document.getElementById('list-tag'),spaet:document.getElementById('list-spaet'),nacht:document.getElementById('list-nacht')};Object.values(c).forEach(x=>x.innerHTML='');rosterData[day].slice().sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))}
-function renderSelectedWeek(){const idx=Number(document.getElementById('week-selector').value||0),days=weekChunks[idx];if(!days?.length)return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Wochenübersicht: '+days[0]+' bis '+days[days.length-1];const root=document.getElementById('week-view-container');root.innerHTML='';days.forEach((day,i)=>{const col=document.createElement('div');col.className='week-day-column';const badge=dayComments[day]?'<div style="font-size:.75rem;background:#ffc107;color:#000;padding:4px;border-radius:4px;margin-top:6px;white-space:normal">'+escapeHtml(dayComments[day])+'</div>':'';col.innerHTML='<div class="week-day-header">'+escapeHtml(getWeekdayLabel(day))+', '+escapeHtml(day.slice(0,5))+badge+'</div><div class="week-shift-section" id="w'+i+'f"><h4>Frühdienst</h4></div><div class="week-shift-section" id="w'+i+'t"><h4>Tag-/Zwischendienst</h4></div><div class="week-shift-section" id="w'+i+'s"><h4>Spätdienst</h4></div><div class="week-shift-section" id="w'+i+'n"><h4>Nachtdienst</h4></div>';root.appendChild(col);const c={frueh:col.querySelector('#w'+i+'f'),tag:col.querySelector('#w'+i+'t'),spaet:col.querySelector('#w'+i+'s'),nacht:col.querySelector('#w'+i+'n')};(rosterData[day]||[]).slice().sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))})}
-function renderMonthView(){const h=document.getElementById('month-header-row');h.innerHTML='<th>Mitarbeiter</th>';allDays.forEach(day=>{const th=document.createElement('th');th.innerHTML=escapeHtml(day.slice(0,5))+'<br><small>'+escapeHtml(getWeekdayLabel(day))+'</small>';h.appendChild(th)});const b=document.getElementById('month-body-rows');b.innerHTML='';allStaff.forEach(name=>{const tr=document.createElement('tr'),td=document.createElement('td');td.className='staff-name';td.textContent=name;tr.appendChild(td);allDays.forEach(day=>{const cell=document.createElement('td'),shifts=(rosterData[day]||[]).filter(s=>s.name===name);if(shifts.length){cell.innerHTML=shifts.map(s=>{const titles=getAssignmentsForStaff(day,name,s.category).map(a=>a.title).join(', ');return escapeHtml(s.dienst)+' ('+escapeHtml(s.beginn)+'–'+escapeHtml(s.ende)+')'+(titles?'<br><strong>'+escapeHtml(titles)+'</strong>':'')}).join('<br>');cell.className=shifts.some(s=>s.isJoker)?'type-joker':'type-'+shifts[0].category}tr.appendChild(cell)});b.appendChild(tr)})}
+function renderSelectedDay(){const day=document.getElementById('day-selector').value;if(!day||!rosterData[day])return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Tagesplan: '+getWeekdayLabel(day)+', '+day;const cb=document.getElementById('comment-box');if(dayComments[day]){document.getElementById('comment-text').textContent=dayComments[day];cb.style.display='block'}else cb.style.display='none';const c={frueh:document.getElementById('list-frueh'),tag:document.getElementById('list-tag'),spaet:document.getElementById('list-spaet'),nacht:document.getElementById('list-nacht')};Object.values(c).forEach(x=>x.innerHTML='');rosterData[day].slice().filter(shouldDisplayShift).sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))}
+function renderSelectedWeek(){const idx=Number(document.getElementById('week-selector').value||0),days=weekChunks[idx];if(!days?.length)return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Wochenübersicht: '+days[0]+' bis '+days[days.length-1];const root=document.getElementById('week-view-container');root.innerHTML='';days.forEach((day,i)=>{const col=document.createElement('div');col.className='week-day-column';const badge=dayComments[day]?'<div style="font-size:.75rem;background:#ffc107;color:#000;padding:4px;border-radius:4px;margin-top:6px;white-space:normal">'+escapeHtml(dayComments[day])+'</div>':'';col.innerHTML='<div class="week-day-header">'+escapeHtml(getWeekdayLabel(day))+', '+escapeHtml(day.slice(0,5))+badge+'</div><div class="week-shift-section" id="w'+i+'f"><h4>Frühdienst</h4></div><div class="week-shift-section" id="w'+i+'t"><h4>Tag-/Zwischendienst</h4></div><div class="week-shift-section" id="w'+i+'s"><h4>Spätdienst</h4></div><div class="week-shift-section" id="w'+i+'n"><h4>Nachtdienst</h4></div>';root.appendChild(col);const c={frueh:col.querySelector('#w'+i+'f'),tag:col.querySelector('#w'+i+'t'),spaet:col.querySelector('#w'+i+'s'),nacht:col.querySelector('#w'+i+'n')};(rosterData[day]||[]).slice().filter(shouldDisplayShift).sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))})}
+function renderMonthView(){const h=document.getElementById('month-header-row');h.innerHTML='<th>Mitarbeiter</th>';allDays.forEach(day=>{const th=document.createElement('th');th.innerHTML=escapeHtml(day.slice(0,5))+'<br><small>'+escapeHtml(getWeekdayLabel(day))+'</small>';h.appendChild(th)});const b=document.getElementById('month-body-rows');b.innerHTML='';allStaff.forEach(name=>{const tr=document.createElement('tr'),td=document.createElement('td');td.className='staff-name';td.textContent=name;tr.appendChild(td);allDays.forEach(day=>{const cell=document.createElement('td'),shifts=(rosterData[day]||[]).filter(s=>s.name===name&&shouldDisplayShift(s));if(shifts.length){cell.innerHTML=shifts.map(s=>{const titles=getAssignmentsForStaff(day,name,s.category).map(a=>a.title).join(', ');return escapeHtml(s.dienst)+' ('+escapeHtml(s.beginn)+'–'+escapeHtml(s.ende)+')'+(titles?'<br><strong>'+escapeHtml(titles)+'</strong>':'')}).join('<br>');cell.className=shifts.some(s=>s.isJoker)?'type-joker':'type-'+shifts[0].category}tr.appendChild(cell)});b.appendChild(tr)})}
 function renderCurrentViews(){renderSelectedDay();renderMonthView();if(currentView==='week')renderSelectedWeek()}
+
+function getJokerMonthIds(){return Object.keys(rosterArchive).filter(id=>/^\d{4}-\d{2}$/.test(id)).sort()}
+function fillJokerMonthSelectors(){
+  const ids=getJokerMonthIds(),from=document.getElementById('joker-from-month'),to=document.getElementById('joker-to-month');
+  if(!from||!to)return;
+  const oldFrom=from.value,oldTo=to.value;
+  from.innerHTML='';to.innerHTML='';
+  ids.forEach(id=>{
+    const label=rosterArchive[id]?.label||id;
+    [from,to].forEach(sel=>{const o=document.createElement('option');o.value=id;o.textContent=label;sel.appendChild(o)})
+  });
+  if(!ids.length)return;
+  from.value=ids.includes(oldFrom)?oldFrom:ids[0];
+  to.value=ids.includes(oldTo)?oldTo:ids[ids.length-1];
+}
+function getSelectedJokerMonthIds(){
+  const ids=getJokerMonthIds();if(!ids.length)return[];
+  const from=document.getElementById('joker-from-month')?.value||ids[0],to=document.getElementById('joker-to-month')?.value||ids[ids.length-1];
+  const a=ids.indexOf(from),b=ids.indexOf(to);if(a<0||b<0)return ids;
+  return a<=b?ids.slice(a,b+1):ids.slice(b,a+1);
+}
+function calculateJokerReport(monthIds=getSelectedJokerMonthIds()){
+  const stats={};let totalJF=0,totalJSD=0;
+  monthIds.forEach(id=>{
+    const r=rosterArchive[id];
+    Object.values(r?.rosterData||{}).forEach(shifts=>(shifts||[]).forEach(shift=>{
+      const code=String(shift.dienst||'').trim().toUpperCase();
+      if(code!=='JF'&&code!=='JSD')return;
+      const name=String(shift.name||'').trim()||'Unbekannt';
+      stats[name]??={name,JF:0,JSD:0,total:0};
+      stats[name][code]++;stats[name].total++;
+      if(code==='JF')totalJF++;else totalJSD++;
+    }));
+  });
+  const rows=Object.values(stats).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'de'));
+  return{rows,totalJF,totalJSD,total:totalJF+totalJSD};
+}
+function renderJokerReport(){
+  fillJokerMonthSelectors();
+  const monthIds=getSelectedJokerMonthIds(),result=calculateJokerReport(monthIds),body=document.getElementById('joker-report-body');
+  if(!body)return;
+  document.getElementById('joker-total-jf').textContent=result.totalJF;
+  document.getElementById('joker-total-jsd').textContent=result.totalJSD;
+  document.getElementById('joker-total-all').textContent=result.total;
+  const first=monthIds[0],last=monthIds[monthIds.length-1];
+  document.getElementById('joker-report-period').textContent=monthIds.length?('Zeitraum: '+(rosterArchive[first]?.label||first)+(first!==last?' bis '+(rosterArchive[last]?.label||last):'')):'Keine Monate vorhanden';
+  body.innerHTML='';
+  if(!result.rows.length){body.innerHTML='<tr><td colspan="4">Im ausgewählten Zeitraum wurden keine JF/JSD-Jokerdienste gefunden.</td></tr>';return}
+  result.rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+escapeHtml(r.name)+'</td><td>'+r.JF+'</td><td>'+r.JSD+'</td><td><strong>'+r.total+'</strong></td>';body.appendChild(tr)});
+  const tr=document.createElement('tr');tr.className='joker-total-row';tr.innerHTML='<td>GESAMT</td><td>'+result.totalJF+'</td><td>'+result.totalJSD+'</td><td>'+result.total+'</td>';body.appendChild(tr);
+}
+function exportJokerReportXlsx(){
+  const monthIds=getSelectedJokerMonthIds(),result=calculateJokerReport(monthIds);
+  if(!monthIds.length){alert('Es sind keine Monate vorhanden.');return}
+  const rows=result.rows.map(r=>({'Mitarbeiter':r.name,'JF':r.JF,'JSD':r.JSD,'Jokerdienste gesamt':r.total}));
+  rows.push({'Mitarbeiter':'GESAMT','JF':result.totalJF,'JSD':result.totalJSD,'Jokerdienste gesamt':result.total});
+  const ws=XLSX.utils.json_to_sheet(rows,{header:['Mitarbeiter','JF','JSD','Jokerdienste gesamt']});
+  ws['!cols']=[{wch:34},{wch:10},{wch:10},{wch:20}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Jokerdienste');
+  const first=monthIds[0],last=monthIds[monthIds.length-1],name='Jokerdienste_'+first+(first!==last?'_bis_'+last:'')+'.xlsx';
+  XLSX.writeFile(wb,name);
+}
+function printJokerReport(){
+  const report=document.getElementById('joker-report-container');if(!report)return;
+  document.body.classList.add('print-joker-report');window.print();setTimeout(()=>document.body.classList.remove('print-joker-report'),300);
+}
 
 async function saveRangeComment(){if(!activeRosterId)return;const start=document.getElementById('range-start').value,end=document.getElementById('range-end').value,prefix=document.getElementById('range-shift-type').value,text=document.getElementById('range-text').value.trim();if(!text){alert('Bitte Hinweis eingeben.');return}const a=allDays.indexOf(start),b=allDays.indexOf(end);if(a<0||b<0||a>b){alert('Ungültiger Zeitraum.');return}const full=prefix+text;for(let i=a;i<=b;i++){const day=allDays[i];dayComments[day]=dayComments[day]&&!dayComments[day].includes(full)?dayComments[day]+' | '+full:(dayComments[day]||full)}rosterArchive[activeRosterId].comments=dayComments;await saveArchiveToSupabase();document.getElementById('range-text').value='';renderCommentManagerTable();renderCurrentViews()}
 function renderCommentManagerTable(){const b=document.getElementById('comment-manager-body');b.innerHTML='';allDays.forEach(day=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+escapeHtml(getWeekdayLabel(day)+', '+day)+'</td><td><input type="text" data-day="'+escapeHtml(day)+'" value="'+escapeHtml(dayComments[day]||'')+'" placeholder="Kommentar eingeben..."></td>';b.appendChild(tr)})}
 async function saveAllComments(){document.querySelectorAll('#comment-manager-body input').forEach(i=>{const v=i.value.trim();if(v)dayComments[i.dataset.day]=v;else delete dayComments[i.dataset.day]});rosterArchive[activeRosterId].comments=dayComments;await saveArchiveToSupabase();renderCurrentViews()}
 function toggleCommentManager(){const a=document.getElementById('comment-manager-area');a.style.display=a.style.display==='none'?'block':'none'}
-function switchView(view){if(!activeRosterId)return;currentView=view;document.getElementById('day-view-container').style.display=view==='day'?'grid':'none';document.getElementById('week-view-container').style.display=view==='week'?'grid':'none';document.getElementById('month-view-container').style.display=view==='month'?'block':'none';document.getElementById('day-selector').style.display=view==='day'?'inline-block':'none';document.getElementById('week-selector').style.display=view==='week'?'inline-block':'none';['day','week','month'].forEach(v=>document.getElementById('btn-'+v).className=v===view?'btn-primary btn-active':'btn-secondary');if(view==='day')renderSelectedDay();if(view==='week')renderSelectedWeek();if(view==='month'){renderMonthView();document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Monatsübersicht'}}
+function switchView(view){if(!activeRosterId)return;currentView=view;document.getElementById('day-view-container').style.display=view==='day'?'grid':'none';document.getElementById('week-view-container').style.display=view==='week'?'grid':'none';document.getElementById('month-view-container').style.display=view==='month'?'block':'none';document.getElementById('joker-report-container').style.display=view==='joker'?'block':'none';document.getElementById('day-selector').style.display=view==='day'?'inline-block':'none';document.getElementById('week-selector').style.display=view==='week'?'inline-block':'none';['day','week','month','joker'].forEach(v=>document.getElementById('btn-'+v).className=v===view?'btn-primary btn-active':'btn-secondary');if(view==='day')renderSelectedDay();if(view==='week')renderSelectedWeek();if(view==='month'){renderMonthView();document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Monatsübersicht'}if(view==='joker'){renderJokerReport();document.getElementById('current-date-display').textContent='Jokerdienste · Auswertung für die Buchhaltung'}}
 function toggleAdmin(){const p=document.getElementById('admin-panel');p.style.display=p.style.display==='block'?'none':'block';if(p.style.display==='block'){renderAssignmentManager();renderCommentManagerTable()}}
 async function deleteActiveRoster(){if(!activeRosterId)return;const label=rosterArchive[activeRosterId].label;if(!confirm(label+' wirklich vollständig löschen?'))return;delete rosterArchive[activeRosterId];await saveArchiveToSupabase();const ids=Object.keys(rosterArchive).sort().reverse();const currentMonthId=getCurrentMonthId();activeRosterId=rosterArchive[currentMonthId]?currentMonthId:(ids[0]||'');renderRosterMonthSelector();if(activeRosterId)loadRoster(activeRosterId);else{clearCurrentRoster();showEmptyState()}}
 function clearCurrentRoster(){rosterData={};allStaff=[];allDays=[];weekChunks=[];dayComments={};assignments=[];document.getElementById('comment-box').style.display='none';document.getElementById('month-header-row').innerHTML='<th>Mitarbeiter</th>';document.getElementById('month-body-rows').innerHTML=''}
-function showEmptyState(){document.getElementById('empty-state').style.display='block';document.getElementById('day-view-container').style.display='none';document.getElementById('week-view-container').style.display='none';document.getElementById('month-view-container').style.display='none';document.getElementById('current-date-display').textContent='Noch kein Dienstplan gespeichert'}
+function showEmptyState(){document.getElementById('empty-state').style.display='block';document.getElementById('day-view-container').style.display='none';document.getElementById('week-view-container').style.display='none';document.getElementById('month-view-container').style.display='none';document.getElementById('joker-report-container').style.display='none';document.getElementById('current-date-display').textContent='Noch kein Dienstplan gespeichert'}
 function hideEmptyState(){document.getElementById('empty-state').style.display='none'}
 initializeAuth();
 </script>
