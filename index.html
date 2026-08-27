@@ -93,7 +93,7 @@
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Feiertagswünsche kompakt</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabilisiert</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -106,7 +106,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Feiertagswünsche kompakt</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabilisiert</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -487,6 +487,55 @@ function renderSelectedDay(){const day=document.getElementById('day-selector').v
 function renderSelectedWeek(){const idx=Number(document.getElementById('week-selector').value||0),days=weekChunks[idx];if(!days?.length)return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Wochenübersicht: '+days[0]+' bis '+days[days.length-1];const root=document.getElementById('week-view-container');root.innerHTML='';days.forEach((day,i)=>{const col=document.createElement('div');col.className='week-day-column';const badge=dayComments[day]?'<div style="font-size:.75rem;background:#ffc107;color:#000;padding:4px;border-radius:4px;margin-top:6px;white-space:normal">'+escapeHtml(dayComments[day])+'</div>':'';col.innerHTML='<div class="week-day-header">'+escapeHtml(getWeekdayLabel(day))+', '+escapeHtml(day.slice(0,5))+badge+'</div><div class="week-shift-section" id="w'+i+'f"><h4>Frühdienst</h4></div><div class="week-shift-section" id="w'+i+'t"><h4>Tag-/Zwischendienst</h4></div><div class="week-shift-section" id="w'+i+'s"><h4>Spätdienst</h4></div><div class="week-shift-section" id="w'+i+'n"><h4>Nachtdienst</h4></div>';root.appendChild(col);const c={frueh:col.querySelector('#w'+i+'f'),tag:col.querySelector('#w'+i+'t'),spaet:col.querySelector('#w'+i+'s'),nacht:col.querySelector('#w'+i+'n')};(rosterData[day]||[]).slice().filter(shouldDisplayShift).sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))})}
 function renderMonthView(){const h=document.getElementById('month-header-row');h.innerHTML='<th>Mitarbeiter</th>';allDays.forEach(day=>{const th=document.createElement('th');th.innerHTML=escapeHtml(day.slice(0,5))+'<br><small>'+escapeHtml(getWeekdayLabel(day))+'</small>';h.appendChild(th)});const b=document.getElementById('month-body-rows');b.innerHTML='';allStaff.forEach(name=>{const tr=document.createElement('tr'),td=document.createElement('td');td.className='staff-name';td.textContent=name;tr.appendChild(td);allDays.forEach(day=>{const cell=document.createElement('td'),shifts=(rosterData[day]||[]).filter(s=>s.name===name&&shouldDisplayShift(s));if(shifts.length){cell.innerHTML=shifts.map(s=>{const titles=getAssignmentsForStaff(day,name,s.category).map(a=>a.title).join(', ');return escapeHtml(s.dienst)+' ('+escapeHtml(s.beginn)+'–'+escapeHtml(s.ende)+')'+(titles?'<br><strong>'+escapeHtml(titles)+'</strong>':'')}).join('<br>');cell.className=shifts.some(s=>s.isJoker)?'type-joker':'type-'+shifts[0].category}tr.appendChild(cell)});b.appendChild(tr)})}
 function renderCurrentViews(){renderSelectedDay();renderMonthView();if(currentView==='week')renderSelectedWeek()}
+
+
+async function saveRangeComment(){
+  if(!activeRosterId)return;
+  const start=document.getElementById('range-start').value;
+  const end=document.getElementById('range-end').value;
+  const prefix=document.getElementById('range-shift-type').value;
+  const text=document.getElementById('range-text').value.trim();
+
+  if(!text){alert('Bitte Hinweis eingeben.');return}
+
+  const a=allDays.indexOf(start),b=allDays.indexOf(end);
+  if(a<0||b<0||a>b){alert('Ungültiger Zeitraum.');return}
+
+  const full=prefix+text;
+  for(let i=a;i<=b;i++){
+    const day=allDays[i];
+    dayComments[day]=dayComments[day]&&!dayComments[day].includes(full)
+      ? dayComments[day]+' | '+full
+      : (dayComments[day]||full);
+  }
+
+  rosterArchive[activeRosterId].comments=dayComments;
+  await saveArchiveToSupabase();
+  document.getElementById('range-text').value='';
+  renderCommentManagerTable();
+  renderCurrentViews();
+}
+
+function toggleCommentManager(){
+  const area=document.getElementById('comment-manager-area');
+  if(!area)return;
+  area.style.display=area.style.display==='none'?'block':'none';
+}
+
+async function saveAllComments(){
+  if(!activeRosterId)return;
+  document.querySelectorAll('#comment-manager-body input').forEach(input=>{
+    const day=input.dataset.day;
+    const value=input.value.trim();
+    if(value)dayComments[day]=value;
+    else delete dayComments[day];
+  });
+  rosterArchive[activeRosterId].comments=dayComments;
+  await saveArchiveToSupabase();
+  renderCurrentViews();
+  renderCommentManagerTable();
+}
+
 
 function getJokerMonthIds(){return Object.keys(rosterArchive).filter(id=>/^\d{4}-\d{2}$/.test(id)).sort()}
 function fillJokerMonthSelectors(){
