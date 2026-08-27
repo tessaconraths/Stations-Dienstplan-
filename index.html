@@ -58,21 +58,6 @@
     .joker-report table td:first-child{text-align:left;font-weight:600}
     .joker-total-row{font-weight:800;background:#f1f5f9}
 
-    .holiday-view{display:none;background:#fff;padding:18px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-    .holiday-toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:14px;padding:12px;background:#f8fafc;border:1px solid var(--border);border-radius:9px}
-    .holiday-info{margin:0 0 12px;color:#475569;line-height:1.45}
-    .holiday-print-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:8px 0 12px;font-size:.95rem}
-    .holiday-sheet{border:2px solid #94a3b8;border-radius:10px;overflow:hidden}
-    .holiday-grid{display:grid;grid-template-columns:155px repeat(4,minmax(150px,1fr))}
-    .holiday-cell{border-right:1px solid #cbd5e1;border-bottom:1px solid #cbd5e1;padding:8px}
-    .holiday-grid>.holiday-cell:nth-child(5n){border-right:0}
-    .holiday-head{background:#e2e8f0;font-weight:800;text-align:center;display:flex;align-items:center;justify-content:center;min-height:48px}
-    .holiday-date{background:#f8fafc;font-weight:800;display:flex;flex-direction:column;justify-content:center;min-height:92px}
-    .holiday-date small{font-weight:600;color:#64748b;margin-top:3px}
-    .holiday-write{min-height:92px;padding:7px 9px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#cbd5e1 28px)}
-    .holiday-note{margin-top:10px;font-size:.82rem;color:#475569}
-    .holiday-notes{margin-top:12px;border:1px solid #cbd5e1;border-radius:8px;padding:9px}
-    .holiday-notes-lines{height:54px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 25px,#cbd5e1 26px)}
     .login-link{width:100%;margin-top:8px;background:transparent!important;color:var(--primary)!important;padding:7px!important;text-decoration:underline;font-weight:600}
     .password-modal{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.58);display:grid;place-items:center;padding:18px}
     .password-modal-card{width:min(430px,100%);background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
@@ -81,19 +66,13 @@
     .password-message{margin-top:10px;white-space:pre-wrap;font-size:.9rem}.password-message.error{color:#b91c1c}.password-message.success{color:#166534}
     @media(max-width:700px){body{padding:10px}.header{padding:12px}.nav-buttons{width:100%}.nav-buttons select,.nav-buttons button{flex:1 1 auto}.day-view{grid-template-columns:1fr}}
     @media print{body{padding:0;background:#fff}.header,#admin-panel,.no-print,#empty-state{display:none!important}.shift-group,.week-day-column{box-shadow:none;border:1px solid #ccc}.day-view{grid-template-columns:repeat(4,1fr)}.week-view{grid-template-columns:repeat(7,1fr);gap:6px}body.print-joker-report #day-view-container,body.print-joker-report #week-view-container,body.print-joker-report #month-view-container,body.print-joker-report #comment-box{display:none!important}body.print-joker-report #joker-report-container{display:block!important;box-shadow:none;padding:0}body.print-joker-report #joker-report-container table{font-size:10pt}body.print-holiday-report #day-view-container,body.print-holiday-report #week-view-container,body.print-holiday-report #month-view-container,body.print-holiday-report #joker-report-container,body.print-holiday-report #comment-box{display:none!important}body.print-holiday-report #holiday-view-container{display:block!important;box-shadow:none;padding:0}body.print-holiday-report #holiday-view-container .holiday-toolbar{display:none!important}body.print-holiday-report #holiday-view-container .holiday-blocks{gap:8px}body.print-holiday-report #holiday-view-container .holiday-block{border-width:1px}body.print-holiday-report #holiday-view-container .holiday-block-title{padding:5px 8px;font-size:9.5pt}body.print-holiday-report #holiday-view-container .holiday-service-row{grid-template-columns:145px 1fr;min-height:42px}body.print-holiday-report #holiday-view-container .holiday-service-label{padding:4px 6px;font-size:8.5pt}body.print-holiday-report #holiday-view-container .holiday-name-lines{padding:3px 6px;gap:2px}body.print-holiday-report #holiday-view-container .holiday-name-line{min-height:13px}body.print-holiday-report #holiday-view-container .holiday-notes{margin-top:8px;padding:6px;font-size:8.5pt}body.print-holiday-report #holiday-view-container .holiday-notes-lines{height:36px}@page{size:A4 landscape;margin:.8cm}}
-    @media print{
-      body.print-holiday-report .holiday-view{display:block!important;padding:0;box-shadow:none}
-      body.print-holiday-report .holiday-grid{grid-template-columns:135px repeat(4,1fr)}
-      body.print-holiday-report .holiday-head{min-height:38px}
-      body.print-holiday-report .holiday-date,body.print-holiday-report .holiday-write{min-height:82px}
-      body.print-holiday-report .holiday-info,body.print-holiday-report .holiday-note{font-size:9pt}
-    }
+
   </style>
 </head>
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabilisiert</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil ohne Feiertage</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -106,20 +85,18 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabilisiert</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil ohne Feiertage</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
         <span id="sync-status" class="sync-status">Bereit</span>
-        <label class="joker-toggle" title="JF/JSD in den Dienstansichten ein- oder ausblenden"><input id="show-jokers-toggle" type="checkbox" checked onchange="toggleJokerVisibility()"> Jokerdienste anzeigen</label>
         <select id="roster-month-selector" onchange="loadSelectedRoster()"><option value="">Kein Monat gespeichert</option></select>
-        <select id="day-selector" onchange="renderSelectedDay()"></select>
+        <select id="day-selector" onchange="syncWeekToSelectedDay();renderSelectedDay()"></select>
         <select id="week-selector" onchange="renderSelectedWeek()" style="display:none"></select>
         <button id="btn-day" class="btn-primary" onclick="switchView('day')">Tagesansicht</button>
         <button id="btn-week" class="btn-secondary" onclick="switchView('week')">Wochenansicht</button>
         <button id="btn-month" class="btn-secondary" onclick="switchView('month')">Monatsansicht</button>
         <button id="btn-joker" class="btn-secondary" onclick="switchView('joker')">Joker-Auswertung</button>
-        <button id="btn-holiday" class="btn-secondary" onclick="switchView('holiday')">Feiertagswünsche</button>
         <button class="btn-secondary" onclick="window.print()">Drucken</button>
         <button class="btn-secondary" onclick="toggleAdmin()">Leitungs-Bereich</button>
         <button class="btn-secondary" onclick="reloadArchiveFromSupabase()">Neu laden</button>
@@ -201,23 +178,6 @@
       <div style="overflow-x:auto"><table id="joker-report-table"><thead><tr><th>Mitarbeiter</th><th>JF</th><th>JSD</th><th>Gesamt</th></tr></thead><tbody id="joker-report-body"></tbody></table></div>
     </div>
 
-    <div id="holiday-view-container" class="holiday-view">
-      <h2 style="margin-top:0">Feiertags-Dienstwünsche</h2>
-      <p class="holiday-info">Pro Feiertag einfach den Namen in die gewünschte Dienstspalte eintragen. So ist auf einen Blick sichtbar, welche Dienste bereits Interessenten haben und wo noch Wünsche fehlen.</p>
-      <div class="holiday-toolbar no-print">
-        <div class="form-field"><label>Planungsjahr</label><select id="holiday-year" onchange="renderHolidayPrintList()"></select></div>
-        <div class="form-field"><button class="btn-primary" onclick="printHolidayPreferences()">Liste drucken</button></div>
-      </div>
-      <div class="holiday-print-head">
-        <div><strong>Station:</strong> ______________________________</div>
-        <div><strong>Planung:</strong> Weihnachten <span id="holiday-print-year"></span></div>
-      </div>
-      <div class="holiday-sheet">
-        <div id="holiday-blocks" class="holiday-grid"></div>
-      </div>
-      <div class="holiday-note"><strong>Eintragung:</strong> Name in das gewünschte Feld schreiben. Mehrere Namen pro Dienst sind möglich.</div>
-      <div class="holiday-notes"><strong>Absprachen / Besonderheiten</strong><div class="holiday-notes-lines"></div></div>
-    </div>
 
   </main>
 
@@ -243,7 +203,6 @@ let passwordFlowRequired=false;
 let rosterArchive={}, activeRosterId='', rosterData={}, allStaff=[], allDays=[], weekChunks=[], dayComments={}, assignments=[];
 let currentView='day', editingAssignmentId=null, currentUser=null, saveTimer=null;
 let holidayPreferences={}, editingHolidayId=null;
-let showJokers=true;
 
 function setSyncStatus(text,isError=false){const el=document.getElementById('sync-status');el.textContent=text;el.classList.toggle('error',isError)}
 async function login(){
@@ -423,6 +382,37 @@ function getCurrentMonthId(){
     const now=new Date();
     return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
 }
+
+function toDateKey(date){
+    return String(date.getDate()).padStart(2,'0')+'.'+String(date.getMonth()+1).padStart(2,'0')+'.'+date.getFullYear();
+}
+function mondayOf(date){
+    const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+    const day=d.getDay()||7;
+    d.setDate(d.getDate()-day+1);
+    return d;
+}
+function buildCalendarWeeks(days){
+    const groups=new Map();
+    days.slice().sort(sortGermanDates).forEach(day=>{
+        const d=parseGermanDate(day);
+        if(!d)return;
+        const key=toDateKey(mondayOf(d));
+        if(!groups.has(key))groups.set(key,[]);
+        groups.get(key).push(day);
+    });
+    return Array.from(groups.values());
+}
+function findWeekIndexForDay(day){
+    const idx=weekChunks.findIndex(chunk=>chunk.includes(day));
+    return idx>=0?idx:0;
+}
+function syncWeekToSelectedDay(){
+    const day=document.getElementById('day-selector')?.value;
+    const weekSelector=document.getElementById('week-selector');
+    if(day&&weekSelector&&weekSelector.options.length)weekSelector.value=String(findWeekIndexForDay(day));
+}
+
 function getDefaultDisplayDay(){
     if(!allDays.length)return '';
     const sortedDays=allDays.slice().sort(sortGermanDates);
@@ -438,7 +428,7 @@ function getDefaultDisplayDay(){
 
     return sortedDays[sortedDays.length-1];
 }
-function loadRoster(id,useAutomaticDay=false){
+function loadRoster(id,useAutomaticDay=true){
     const r=rosterArchive[id];
     if(!r){showEmptyState();return;}
 
@@ -448,15 +438,16 @@ function loadRoster(id,useAutomaticDay=false){
     allDays=(r.allDays||[]).slice().sort(sortGermanDates);
     dayComments=r.comments||{};
     assignments=r.assignments||[];
-    weekChunks=[];
-    for(let i=0;i<allDays.length;i+=7)weekChunks.push(allDays.slice(i,i+7));
+    weekChunks=buildCalendarWeeks(allDays);
 
     fillSelectors();
     document.getElementById('roster-month-selector').value=id;
 
-    if(useAutomaticDay){
-        const defaultDay=getDefaultDisplayDay();
-        if(defaultDay)document.getElementById('day-selector').value=defaultDay;
+    const defaultDay=getDefaultDisplayDay();
+    if(defaultDay){
+        document.getElementById('day-selector').value=defaultDay;
+        document.getElementById('assignment-date').value=defaultDay;
+        syncWeekToSelectedDay();
     }
 
     hideEmptyState();
@@ -466,8 +457,39 @@ function loadRoster(id,useAutomaticDay=false){
     currentView='day';
     switchView('day');
 }
-function fillSelectors(){const sels=['day-selector','range-start','range-end','assignment-date'].map(id=>document.getElementById(id));sels.forEach(s=>s.innerHTML='');allDays.forEach(day=>{const label=getWeekdayLabel(day)+', '+day;sels.forEach(s=>{const o=document.createElement('option');o.value=day;o.textContent=label;s.appendChild(o)})});const w=document.getElementById('week-selector');w.innerHTML='';weekChunks.forEach((c,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent='Woche '+(i+1)+': '+c[0]+' – '+c[c.length-1];w.appendChild(o)});if(allDays.length){document.getElementById('day-selector').value=allDays[0];document.getElementById('range-start').value=allDays[0];document.getElementById('range-end').value=allDays[allDays.length-1];document.getElementById('assignment-date').value=allDays[0]}updateAssignmentStaffOptions()}
+function fillSelectors(){
+    const selectors=['day-selector','range-start','range-end','assignment-date'].map(id=>document.getElementById(id));
+    selectors.forEach(s=>s.innerHTML='');
 
+    allDays.forEach(day=>{
+        const label=getWeekdayLabel(day)+', '+day;
+        selectors.forEach(s=>{
+            const o=document.createElement('option');
+            o.value=day;
+            o.textContent=label;
+            s.appendChild(o);
+        });
+    });
+
+    const weekSelector=document.getElementById('week-selector');
+    weekSelector.innerHTML='';
+    weekChunks.forEach((chunk,i)=>{
+        const o=document.createElement('option');
+        o.value=String(i);
+        o.textContent='Woche '+(i+1)+': '+chunk[0]+' – '+chunk[chunk.length-1];
+        weekSelector.appendChild(o);
+    });
+
+    if(allDays.length){
+        const defaultDay=getDefaultDisplayDay()||allDays[0];
+        document.getElementById('day-selector').value=defaultDay;
+        document.getElementById('range-start').value=allDays[0];
+        document.getElementById('range-end').value=allDays[allDays.length-1];
+        document.getElementById('assignment-date').value=defaultDay;
+        if(weekSelector.options.length)weekSelector.value=String(findWeekIndexForDay(defaultDay));
+    }
+    updateAssignmentStaffOptions();
+}
 function updateAssignmentStaffOptions(preferred=''){const date=document.getElementById('assignment-date').value,cat=document.getElementById('assignment-shift').value,s=document.getElementById('assignment-staff');s.innerHTML='';const list=(rosterData[date]||[]).filter(x=>x.category===cat).sort((a,b)=>a.name.localeCompare(b.name,'de'));if(!list.length){s.innerHTML='<option value="">Kein Mitarbeiter in dieser Schicht</option>';s.disabled=true;return}s.disabled=false;list.forEach(x=>{const o=document.createElement('option');o.value=x.name;o.textContent=x.name+' – '+x.dienst+' ('+x.beginn+'–'+x.ende+')';s.appendChild(o)});if(preferred&&list.some(x=>x.name===preferred))s.value=preferred}
 async function saveAssignment(){if(!activeRosterId)return;const date=document.getElementById('assignment-date').value,shiftCategory=document.getElementById('assignment-shift').value,staffName=document.getElementById('assignment-staff').value,title=document.getElementById('assignment-title').value.trim(),time=document.getElementById('assignment-time').value;if(!staffName){alert('Kein Mitarbeiter ausgewählt.');return}if(!title){alert('Bitte eine Gruppe oder Sonderaufgabe eingeben.');return}const dup=assignments.find(a=>a.id!==editingAssignmentId&&a.date===date&&a.staffName===staffName&&a.shiftCategory===shiftCategory&&a.title.toLowerCase()===title.toLowerCase());if(dup){alert('Diese Zuweisung existiert bereits.');return}if(editingAssignmentId){const a=assignments.find(x=>x.id===editingAssignmentId);Object.assign(a,{date,shiftCategory,staffName,title,time,status:'valid',conflictReason:''})}else assignments.push({id:createId(),date,shiftCategory,staffName,title,time,status:'valid',conflictReason:''});rosterArchive[activeRosterId].assignments=assignments;await saveArchiveToSupabase();clearAssignmentForm();renderAssignmentManager();renderCurrentViews()}
 function editAssignment(id){const a=assignments.find(x=>x.id===id);if(!a)return;editingAssignmentId=id;document.getElementById('assignment-date').value=a.date;document.getElementById('assignment-shift').value=a.shiftCategory;updateAssignmentStaffOptions(a.staffName);document.getElementById('assignment-title').value=a.title;document.getElementById('assignment-time').value=a.time||'';document.getElementById('assignment-save-button').textContent='Änderung speichern';document.getElementById('assignment-edit-notice').classList.remove('hidden')}
@@ -477,15 +499,46 @@ async function deleteAssignment(id){const a=assignments.find(x=>x.id===id);if(!a
 function renderAssignmentManager(){const b=document.getElementById('assignment-manager-body');b.innerHTML='';if(!assignments.length){b.innerHTML='<tr><td colspan="7">Noch keine Zuweisungen vorhanden.</td></tr>';return}assignments.slice().sort((a,b)=>sortGermanDates(a.date,b.date)||a.staffName.localeCompare(b.staffName,'de')).forEach(a=>{const tr=document.createElement('tr'),valid=a.status==='valid';tr.className=valid?'valid-row':'conflict-row';tr.innerHTML='<td>'+escapeHtml(a.date)+'</td><td>'+escapeHtml(getShiftLabel(a.shiftCategory))+'</td><td>'+escapeHtml(a.staffName)+'</td><td>'+escapeHtml(a.title)+'</td><td>'+escapeHtml(a.time||'–')+'</td><td>'+(valid?'<span class="status-badge status-valid">Gültig</span>':'<span class="status-badge status-conflict">Prüfen</span><div class="conflict-text">'+escapeHtml(a.conflictReason)+'</div>')+'</td><td><button class="btn-secondary btn-small" onclick="editAssignment(\''+a.id+'\')">Bearbeiten</button> <button class="btn-danger btn-small" onclick="deleteAssignment(\''+a.id+'\')">Löschen</button></td>';b.appendChild(tr)})}
 function getAssignmentsForStaff(date,name,cat){return assignments.filter(a=>a.date===date&&a.staffName===name&&a.shiftCategory===cat)}
 function getAssignmentDisplayHtml(date,name,cat){return getAssignmentsForStaff(date,name,cat).map(a=>'<span class="assignment-inline"> – '+escapeHtml(a.title)+(a.time?' '+escapeHtml(a.time)+' Uhr':'')+'</span>').join('')}
-function shouldDisplayShift(shift){return showJokers||!isJokerService(shift?.dienst)}
-function toggleJokerVisibility(){showJokers=document.getElementById('show-jokers-toggle')?.checked!==false;renderCurrentViews()}
 function createShiftCard(shift,date){const card=document.createElement('div');card.className=shift.isJoker?'shift-card type-joker':'shift-card type-'+shift.category;const short=shift.name.split(',')[0].trim(),extra=getAssignmentDisplayHtml(date,shift.name,shift.category),time=shift.beginn&&shift.ende?shift.beginn+' – '+shift.ende:'Keine Uhrzeit hinterlegt';card.innerHTML='<div class="shift-card-top"><span class="shift-name">'+escapeHtml(short)+extra+'</span><span class="shift-badge">'+escapeHtml(shift.dienst)+'</span></div><div class="shift-time">'+escapeHtml(time)+'</div>';return card}
 function sortShiftsByStartTime(a,b){const x=timeToMinutes(a.beginn),y=timeToMinutes(b.beginn);if(x===null&&y===null)return a.name.localeCompare(b.name,'de');if(x===null)return 1;if(y===null)return-1;return x-y||a.name.localeCompare(b.name,'de')}
 function appendShiftCard(shift,c,date){const card=createShiftCard(shift,date);if(shift.category==='frueh')c.frueh.appendChild(card);else if(shift.category==='spaet')c.spaet.appendChild(card);else if(shift.category==='nacht')c.nacht.appendChild(card);else c.tag.appendChild(card)}
 
-function renderSelectedDay(){const day=document.getElementById('day-selector').value;if(!day||!rosterData[day])return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Tagesplan: '+getWeekdayLabel(day)+', '+day;const cb=document.getElementById('comment-box');if(dayComments[day]){document.getElementById('comment-text').textContent=dayComments[day];cb.style.display='block'}else cb.style.display='none';const c={frueh:document.getElementById('list-frueh'),tag:document.getElementById('list-tag'),spaet:document.getElementById('list-spaet'),nacht:document.getElementById('list-nacht')};Object.values(c).forEach(x=>x.innerHTML='');rosterData[day].slice().filter(shouldDisplayShift).sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))}
-function renderSelectedWeek(){const idx=Number(document.getElementById('week-selector').value||0),days=weekChunks[idx];if(!days?.length)return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Wochenübersicht: '+days[0]+' bis '+days[days.length-1];const root=document.getElementById('week-view-container');root.innerHTML='';days.forEach((day,i)=>{const col=document.createElement('div');col.className='week-day-column';const badge=dayComments[day]?'<div style="font-size:.75rem;background:#ffc107;color:#000;padding:4px;border-radius:4px;margin-top:6px;white-space:normal">'+escapeHtml(dayComments[day])+'</div>':'';col.innerHTML='<div class="week-day-header">'+escapeHtml(getWeekdayLabel(day))+', '+escapeHtml(day.slice(0,5))+badge+'</div><div class="week-shift-section" id="w'+i+'f"><h4>Frühdienst</h4></div><div class="week-shift-section" id="w'+i+'t"><h4>Tag-/Zwischendienst</h4></div><div class="week-shift-section" id="w'+i+'s"><h4>Spätdienst</h4></div><div class="week-shift-section" id="w'+i+'n"><h4>Nachtdienst</h4></div>';root.appendChild(col);const c={frueh:col.querySelector('#w'+i+'f'),tag:col.querySelector('#w'+i+'t'),spaet:col.querySelector('#w'+i+'s'),nacht:col.querySelector('#w'+i+'n')};(rosterData[day]||[]).slice().filter(shouldDisplayShift).sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))})}
-function renderMonthView(){const h=document.getElementById('month-header-row');h.innerHTML='<th>Mitarbeiter</th>';allDays.forEach(day=>{const th=document.createElement('th');th.innerHTML=escapeHtml(day.slice(0,5))+'<br><small>'+escapeHtml(getWeekdayLabel(day))+'</small>';h.appendChild(th)});const b=document.getElementById('month-body-rows');b.innerHTML='';allStaff.forEach(name=>{const tr=document.createElement('tr'),td=document.createElement('td');td.className='staff-name';td.textContent=name;tr.appendChild(td);allDays.forEach(day=>{const cell=document.createElement('td'),shifts=(rosterData[day]||[]).filter(s=>s.name===name&&shouldDisplayShift(s));if(shifts.length){cell.innerHTML=shifts.map(s=>{const titles=getAssignmentsForStaff(day,name,s.category).map(a=>a.title).join(', ');return escapeHtml(s.dienst)+' ('+escapeHtml(s.beginn)+'–'+escapeHtml(s.ende)+')'+(titles?'<br><strong>'+escapeHtml(titles)+'</strong>':'')}).join('<br>');cell.className=shifts.some(s=>s.isJoker)?'type-joker':'type-'+shifts[0].category}tr.appendChild(cell)});b.appendChild(tr)})}
+function renderSelectedDay(){const day=document.getElementById('day-selector').value;if(!day||!rosterData[day])return;document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Tagesplan: '+getWeekdayLabel(day)+', '+day;const cb=document.getElementById('comment-box');if(dayComments[day]){document.getElementById('comment-text').textContent=dayComments[day];cb.style.display='block'}else cb.style.display='none';const c={frueh:document.getElementById('list-frueh'),tag:document.getElementById('list-tag'),spaet:document.getElementById('list-spaet'),nacht:document.getElementById('list-nacht')};Object.values(c).forEach(x=>x.innerHTML='');rosterData[day].slice().sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day))}
+function renderSelectedWeek(){
+    if(!weekChunks.length)return;
+    const selector=document.getElementById('week-selector');
+    let idx=Number(selector?.value);
+    if(!Number.isInteger(idx)||idx<0||idx>=weekChunks.length){
+        idx=findWeekIndexForDay(document.getElementById('day-selector')?.value||getDefaultDisplayDay());
+        if(selector?.options.length)selector.value=String(idx);
+    }
+    const days=weekChunks[idx];
+    if(!days?.length)return;
+
+    document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Wochenübersicht: '+days[0]+' bis '+days[days.length-1];
+    const root=document.getElementById('week-view-container');
+    root.innerHTML='';
+
+    days.forEach((day,i)=>{
+        const col=document.createElement('div');
+        col.className='week-day-column';
+        const badge=dayComments[day]?'<div style="font-size:.75rem;background:#ffc107;color:#000;padding:4px;border-radius:4px;margin-top:6px;white-space:normal">'+escapeHtml(dayComments[day])+'</div>':'';
+        col.innerHTML='<div class="week-day-header">'+escapeHtml(getWeekdayLabel(day))+', '+escapeHtml(day.slice(0,5))+badge+'</div>'+
+          '<div class="week-shift-section" id="w'+i+'f"><h4>Frühdienst</h4></div>'+
+          '<div class="week-shift-section" id="w'+i+'t"><h4>Tag-/Zwischendienst</h4></div>'+
+          '<div class="week-shift-section" id="w'+i+'s"><h4>Spätdienst</h4></div>'+
+          '<div class="week-shift-section" id="w'+i+'n"><h4>Nachtdienst</h4></div>';
+        root.appendChild(col);
+        const c={
+            frueh:col.querySelector('#w'+i+'f'),
+            tag:col.querySelector('#w'+i+'t'),
+            spaet:col.querySelector('#w'+i+'s'),
+            nacht:col.querySelector('#w'+i+'n')
+        };
+        (rosterData[day]||[]).slice().sort(sortShiftsByStartTime).forEach(s=>appendShiftCard(s,c,day));
+    });
+}
+function renderMonthView(){const h=document.getElementById('month-header-row');h.innerHTML='<th>Mitarbeiter</th>';allDays.forEach(day=>{const th=document.createElement('th');th.innerHTML=escapeHtml(day.slice(0,5))+'<br><small>'+escapeHtml(getWeekdayLabel(day))+'</small>';h.appendChild(th)});const b=document.getElementById('month-body-rows');b.innerHTML='';allStaff.forEach(name=>{const tr=document.createElement('tr'),td=document.createElement('td');td.className='staff-name';td.textContent=name;tr.appendChild(td);allDays.forEach(day=>{const cell=document.createElement('td'),shifts=(rosterData[day]||[]).filter(s=>s.name===name);if(shifts.length){cell.innerHTML=shifts.map(s=>{const titles=getAssignmentsForStaff(day,name,s.category).map(a=>a.title).join(', ');return escapeHtml(s.dienst)+' ('+escapeHtml(s.beginn)+'–'+escapeHtml(s.ende)+')'+(titles?'<br><strong>'+escapeHtml(titles)+'</strong>':'')}).join('<br>');cell.className=shifts.some(s=>s.isJoker)?'type-joker':'type-'+shifts[0].category}tr.appendChild(cell)});b.appendChild(tr)})}
 function renderCurrentViews(){renderSelectedDay();renderMonthView();if(currentView==='week')renderSelectedWeek()}
 
 
@@ -604,51 +657,34 @@ function printJokerReport(){
 }
 
 
-function getHolidayYears(){
-  const years=new Set(getRosterMonthIds().map(id=>Number(id.slice(0,4))));
-  const now=new Date();
-  years.add(now.getFullYear());
-  years.add(now.getFullYear()+1);
-  return Array.from(years).filter(Number.isFinite).sort((a,b)=>a-b);
-}
-function initHolidayView(){
-  const ys=document.getElementById('holiday-year');
-  if(!ys)return;
-  const current=ys.value||String(new Date().getFullYear());
-  ys.innerHTML='';
-  getHolidayYears().forEach(y=>{const o=document.createElement('option');o.value=String(y);o.textContent=String(y);ys.appendChild(o)});
-  if([...ys.options].some(o=>o.value===current))ys.value=current;
-  else if(ys.options.length)ys.value=ys.options[ys.options.length-1].value;
-  renderHolidayPrintList();
-}
-function renderHolidayPrintList(){
-  const year=Number(document.getElementById('holiday-year')?.value||new Date().getFullYear());
-  const yearLabel=document.getElementById('holiday-print-year');
-  if(yearLabel)yearLabel.textContent=year+' / '+(year+1);
-  const root=document.getElementById('holiday-blocks');
-  if(!root)return;
-  const holidays=[
-    {date:'24.12.'+year,title:'Heiligabend'},
-    {date:'25.12.'+year,title:'1. Weihnachtstag'},
-    {date:'26.12.'+year,title:'2. Weihnachtstag'},
-    {date:'31.12.'+year,title:'Silvester'},
-    {date:'01.01.'+(year+1),title:'Neujahr'}
-  ];
-  const services=['Frühdienst','Spätdienst','Nachtdienst','Rufbereitschaft<br><small>06:00–18:00</small>'];
-  let html='<div class="holiday-cell holiday-head">Feiertag</div>';
-  html+=services.map(s=>'<div class="holiday-cell holiday-head">'+s+'</div>').join('');
-  html+=holidays.map(h=>'<div class="holiday-cell holiday-date">'+escapeHtml(h.title)+'<small>'+escapeHtml(h.date)+'</small></div>'+
-    services.map(()=>'<div class="holiday-cell holiday-write"></div>').join('')).join('');
-  root.innerHTML=html;
-}
-function printHolidayPreferences(){
-  renderHolidayPrintList();
-  document.body.classList.add('print-holiday-report');
-  window.print();
-  setTimeout(()=>document.body.classList.remove('print-holiday-report'),300);
-}
 
-function switchView(view){if(!activeRosterId&&view!=='holiday')return;currentView=view;document.getElementById('day-view-container').style.display=view==='day'?'grid':'none';document.getElementById('week-view-container').style.display=view==='week'?'grid':'none';document.getElementById('month-view-container').style.display=view==='month'?'block':'none';document.getElementById('joker-report-container').style.display=view==='joker'?'block':'none';document.getElementById('holiday-view-container').style.display=view==='holiday'?'block':'none';document.getElementById('comment-box').style.display=view==='day'&&document.getElementById('comment-text').textContent?'block':'none';document.getElementById('day-selector').style.display=view==='day'?'inline-block':'none';document.getElementById('week-selector').style.display=view==='week'?'inline-block':'none';['day','week','month','joker','holiday'].forEach(v=>{const b=document.getElementById('btn-'+v);if(b)b.className=v===view?'btn-primary btn-active':'btn-secondary'});if(view==='day')renderSelectedDay();if(view==='week')renderSelectedWeek();if(view==='month'){renderMonthView();document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Monatsübersicht'}if(view==='joker'){renderJokerReport();document.getElementById('current-date-display').textContent='Jokerdienste · Auswertung für die Buchhaltung'}if(view==='holiday'){initHolidayView();document.getElementById('current-date-display').textContent='Feiertagswünsche · Weihnachten & Silvester'}}
+function switchView(view){
+    if(!activeRosterId)return;
+    currentView=view;
+    document.getElementById('day-view-container').style.display=view==='day'?'grid':'none';
+    document.getElementById('week-view-container').style.display=view==='week'?'grid':'none';
+    document.getElementById('month-view-container').style.display=view==='month'?'block':'none';
+    document.getElementById('joker-report-container').style.display=view==='joker'?'block':'none';
+    document.getElementById('comment-box').style.display=view==='day'&&document.getElementById('comment-text').textContent?'block':'none';
+    document.getElementById('day-selector').style.display=view==='day'?'inline-block':'none';
+    document.getElementById('week-selector').style.display=view==='week'?'inline-block':'none';
+
+    ['day','week','month','joker'].forEach(v=>{
+        const b=document.getElementById('btn-'+v);
+        if(b)b.className=v===view?'btn-primary btn-active':'btn-secondary';
+    });
+
+    if(view==='day')renderSelectedDay();
+    if(view==='week')renderSelectedWeek();
+    if(view==='month'){
+        renderMonthView();
+        document.getElementById('current-date-display').textContent=(rosterArchive[activeRosterId]?.label||'')+' · Monatsübersicht';
+    }
+    if(view==='joker'){
+        renderJokerReport();
+        document.getElementById('current-date-display').textContent='Jokerdienste · Auswertung für die Buchhaltung';
+    }
+}
 function toggleAdmin(){const p=document.getElementById('admin-panel');p.style.display=p.style.display==='block'?'none':'block';if(p.style.display==='block'){renderAssignmentManager();renderCommentManagerTable()}}
 async function deleteActiveRoster(){if(!activeRosterId)return;const label=rosterArchive[activeRosterId].label;if(!confirm(label+' wirklich vollständig löschen?'))return;delete rosterArchive[activeRosterId];await saveArchiveToSupabase();const ids=getRosterMonthIds().slice().reverse();const currentMonthId=getCurrentMonthId();activeRosterId=rosterArchive[currentMonthId]?currentMonthId:(ids[0]||'');renderRosterMonthSelector();if(activeRosterId)loadRoster(activeRosterId);else{clearCurrentRoster();showEmptyState()}}
 function clearCurrentRoster(){rosterData={};allStaff=[];allDays=[];weekChunks=[];dayComments={};assignments=[];document.getElementById('comment-box').style.display='none';document.getElementById('month-header-row').innerHTML='<th>Mitarbeiter</th>';document.getElementById('month-body-rows').innerHTML=''}
