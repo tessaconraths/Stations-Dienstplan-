@@ -59,24 +59,19 @@
     .joker-total-row{font-weight:800;background:#f1f5f9}
 
     .holiday-view{display:none;background:#fff;padding:18px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-    .holiday-toolbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:end;margin-bottom:16px;padding:14px;background:#f8fafc;border:1px solid var(--border);border-radius:9px}
-    .holiday-section{margin-top:18px;border:1px solid var(--border);border-radius:9px;overflow:hidden}
-    .holiday-section h3{margin:0;padding:10px 12px;background:#f8fafc;border-bottom:1px solid var(--border);font-size:1rem}
-    .holiday-table-wrapper{overflow-x:auto}
-    .holiday-empty{padding:16px;color:#64748b;text-align:center}
-    .holiday-note{white-space:normal;min-width:180px;text-align:left}
-    .holiday-actions{display:flex;gap:5px;justify-content:center}
-    .holiday-info{margin:0 0 12px;color:#475569;line-height:1.45}
-    .holiday-print-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:10px 0 8px;font-size:.95rem}
-    .holiday-legend{margin:0 0 10px;padding:8px 10px;background:#f8fafc;border:1px solid var(--border);border-radius:7px;font-size:.8rem;color:#475569}
-    .holiday-print-table{table-layout:fixed;width:100%}
-    .holiday-print-table th{white-space:normal;vertical-align:middle;font-size:.78rem;line-height:1.25;padding:7px 5px}
-    .holiday-print-table td{height:34px;padding:4px 5px}
-    .holiday-print-table th:nth-child(1),.holiday-print-table td:nth-child(1){width:4%}
-    .holiday-print-table th:nth-child(2),.holiday-print-table td:nth-child(2){width:18%;text-align:left}
-    .holiday-print-table th:nth-child(n+3):nth-child(-n+7),.holiday-print-table td:nth-child(n+3):nth-child(-n+7){width:10%}
-    .holiday-print-table th:nth-child(8),.holiday-print-table td:nth-child(8){width:15%;white-space:normal}
-    .holiday-print-table th:nth-child(9),.holiday-print-table td:nth-child(9){width:13%;white-space:normal}
+    .holiday-toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:18px;padding:14px;background:#f8fafc;border:1px solid var(--border);border-radius:9px}
+    .holiday-info{margin:0 0 14px;color:#475569;line-height:1.45}
+    .holiday-print-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:10px 0 14px;font-size:.95rem}
+    .holiday-blocks{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .holiday-block{border:2px solid #cbd5e1;border-radius:10px;overflow:hidden;break-inside:avoid;background:#fff}
+    .holiday-block-title{padding:9px 12px;background:#f1f5f9;border-bottom:2px solid #cbd5e1;font-weight:800;font-size:1rem}
+    .holiday-service-row{display:grid;grid-template-columns:185px 1fr;border-bottom:1px solid #cbd5e1;min-height:66px}
+    .holiday-service-row:last-child{border-bottom:0}
+    .holiday-service-label{padding:9px 10px;font-weight:700;background:#f8fafc;border-right:1px solid #cbd5e1;display:flex;align-items:center}
+    .holiday-name-lines{padding:7px 10px;display:grid;grid-template-rows:repeat(2,1fr);gap:4px}
+    .holiday-name-line{border-bottom:1px solid #94a3b8;min-height:20px}
+    .holiday-notes{margin-top:14px;border:1px solid #cbd5e1;border-radius:8px;padding:10px}
+    .holiday-notes-lines{height:62px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 25px,#cbd5e1 26px)}
     .login-link{width:100%;margin-top:8px;background:transparent!important;color:var(--primary)!important;padding:7px!important;text-decoration:underline;font-weight:600}
     .password-modal{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.58);display:grid;place-items:center;padding:18px}
     .password-modal-card{width:min(430px,100%);background:#fff;border-radius:14px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
@@ -84,13 +79,13 @@
     .password-modal-card input,.password-modal-card button{width:100%;margin-top:9px;padding:11px;border-radius:8px;font-size:1rem}.password-modal-card input{border:1px solid #cbd5e1}
     .password-message{margin-top:10px;white-space:pre-wrap;font-size:.9rem}.password-message.error{color:#b91c1c}.password-message.success{color:#166534}
     @media(max-width:700px){body{padding:10px}.header{padding:12px}.nav-buttons{width:100%}.nav-buttons select,.nav-buttons button{flex:1 1 auto}.day-view{grid-template-columns:1fr}}
-    @media print{body{padding:0;background:#fff}.header,#admin-panel,.no-print,#empty-state{display:none!important}.shift-group,.week-day-column{box-shadow:none;border:1px solid #ccc}.day-view{grid-template-columns:repeat(4,1fr)}.week-view{grid-template-columns:repeat(7,1fr);gap:6px}body.print-joker-report #day-view-container,body.print-joker-report #week-view-container,body.print-joker-report #month-view-container,body.print-joker-report #comment-box{display:none!important}body.print-joker-report #joker-report-container{display:block!important;box-shadow:none;padding:0}body.print-joker-report #joker-report-container table{font-size:10pt}body.print-holiday-report #day-view-container,body.print-holiday-report #week-view-container,body.print-holiday-report #month-view-container,body.print-holiday-report #joker-report-container,body.print-holiday-report #comment-box{display:none!important}body.print-holiday-report #holiday-view-container{display:block!important;box-shadow:none;padding:0}body.print-holiday-report #holiday-view-container .holiday-toolbar{display:none!important}body.print-holiday-report #holiday-view-container .holiday-print-table{font-size:9.5pt}body.print-holiday-report #holiday-view-container .holiday-print-table td{height:29px}body.print-holiday-report #holiday-view-container .holiday-legend{font-size:8.5pt;padding:5px 7px}@page{size:A4 landscape;margin:.8cm}}
+    @media print{body{padding:0;background:#fff}.header,#admin-panel,.no-print,#empty-state{display:none!important}.shift-group,.week-day-column{box-shadow:none;border:1px solid #ccc}.day-view{grid-template-columns:repeat(4,1fr)}.week-view{grid-template-columns:repeat(7,1fr);gap:6px}body.print-joker-report #day-view-container,body.print-joker-report #week-view-container,body.print-joker-report #month-view-container,body.print-joker-report #comment-box{display:none!important}body.print-joker-report #joker-report-container{display:block!important;box-shadow:none;padding:0}body.print-joker-report #joker-report-container table{font-size:10pt}body.print-holiday-report #day-view-container,body.print-holiday-report #week-view-container,body.print-holiday-report #month-view-container,body.print-holiday-report #joker-report-container,body.print-holiday-report #comment-box{display:none!important}body.print-holiday-report #holiday-view-container{display:block!important;box-shadow:none;padding:0}body.print-holiday-report #holiday-view-container .holiday-toolbar{display:none!important}body.print-holiday-report #holiday-view-container .holiday-blocks{gap:8px}body.print-holiday-report #holiday-view-container .holiday-block{border-width:1px}body.print-holiday-report #holiday-view-container .holiday-block-title{padding:5px 8px;font-size:9.5pt}body.print-holiday-report #holiday-view-container .holiday-service-row{grid-template-columns:145px 1fr;min-height:42px}body.print-holiday-report #holiday-view-container .holiday-service-label{padding:4px 6px;font-size:8.5pt}body.print-holiday-report #holiday-view-container .holiday-name-lines{padding:3px 6px;gap:2px}body.print-holiday-report #holiday-view-container .holiday-name-line{min-height:13px}body.print-holiday-report #holiday-view-container .holiday-notes{margin-top:8px;padding:6px;font-size:8.5pt}body.print-holiday-report #holiday-view-container .holiday-notes-lines{height:36px}@page{size:A4 landscape;margin:.8cm}}
   </style>
 </head>
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Feiertags-Druckliste</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Feiertagswünsche kompakt</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -103,7 +98,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Feiertags-Druckliste</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Feiertagswünsche kompakt</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -199,24 +194,18 @@
     </div>
 
     <div id="holiday-view-container" class="holiday-view">
-      <h2 style="margin-top:0">Feiertagswünsche Weihnachten & Silvester</h2>
-      <p class="holiday-info">Leere Wunschliste zum Ausdrucken für unsere Station. In die Feiertagsspalten kann handschriftlich z. B. <strong>F</strong> (Früh), <strong>S</strong> (Spät), <strong>N</strong> (Nacht), <strong>Frei</strong> oder <strong>flexibel</strong> eingetragen werden.</p>
+      <h2 style="margin-top:0">Dienstwünsche Weihnachten & Silvester</h2>
+      <p class="holiday-info">Leere Druckliste für unsere Station. Mitarbeitende tragen ihren Namen direkt bei dem Dienst ein, den sie am jeweiligen Feiertag bevorzugen.</p>
       <div class="holiday-toolbar no-print">
         <div class="form-field"><label>Planungsjahr</label><select id="holiday-year" onchange="renderHolidayPrintList()"></select></div>
-        <div class="form-field"><label>Anzahl Leerzeilen</label><select id="holiday-row-count" onchange="renderHolidayPrintList()"><option value="15">15</option><option value="20" selected>20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option></select></div>
-        <div class="form-field"><button class="btn-primary" onclick="printHolidayPreferences()">Leere Liste drucken</button></div>
+        <div class="form-field"><button class="btn-primary" onclick="printHolidayPreferences()">Wunschliste drucken</button></div>
       </div>
       <div class="holiday-print-head">
         <div><strong>Station:</strong> ______________________________</div>
-        <div><strong>Planungsjahr:</strong> <span id="holiday-print-year"></span></div>
+        <div><strong>Weihnachten / Silvester:</strong> <span id="holiday-print-year"></span></div>
       </div>
-      <div class="holiday-legend">Kürzel-Vorschlag: F = Frühdienst · S = Spätdienst · N = Nachtdienst · Frei = Wunsch frei · Flex = flexibel</div>
-      <div class="holiday-table-wrapper">
-        <table id="holiday-print-table" class="holiday-print-table">
-          <thead id="holiday-print-head-row"></thead>
-          <tbody id="holiday-print-body"></tbody>
-        </table>
-      </div>
+      <div id="holiday-blocks" class="holiday-blocks"></div>
+      <div class="holiday-notes"><strong>Anmerkungen / Absprachen</strong><div class="holiday-notes-lines"></div></div>
     </div>
 
   </main>
@@ -574,19 +563,19 @@ function initHolidayView(){
 }
 function renderHolidayPrintList(){
   const year=Number(document.getElementById('holiday-year')?.value||new Date().getFullYear());
-  const rowCount=Number(document.getElementById('holiday-row-count')?.value||20);
   const yearLabel=document.getElementById('holiday-print-year');
-  if(yearLabel)yearLabel.textContent=String(year);
-  const head=document.getElementById('holiday-print-head-row');
-  const body=document.getElementById('holiday-print-body');
-  if(!head||!body)return;
-  head.innerHTML='<tr><th>Nr.</th><th>Name</th><th>Heiligabend<br>24.12.</th><th>1. Weihnachtstag<br>25.12.</th><th>2. Weihnachtstag<br>26.12.</th><th>Silvester<br>31.12.</th><th>Neujahr<br>01.01.</th><th>Rufbereitschaften<br>(Datum / Zeit)</th><th>Bemerkung</th></tr>';
-  body.innerHTML='';
-  for(let i=1;i<=rowCount;i++){
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+i+'</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>';
-    body.appendChild(tr);
-  }
+  if(yearLabel)yearLabel.textContent=year+' / '+(year+1);
+  const root=document.getElementById('holiday-blocks');
+  if(!root)return;
+  const holidays=[
+    {date:'24.12.'+year,title:'Heiligabend'},
+    {date:'25.12.'+year,title:'1. Weihnachtstag'},
+    {date:'26.12.'+year,title:'2. Weihnachtstag'},
+    {date:'31.12.'+year,title:'Silvester'},
+    {date:'01.01.'+(year+1),title:'Neujahr'}
+  ];
+  const services=['Frühdienst','Spätdienst','Nachtdienst','Rufbereitschaft (06:00–18:00)'];
+  root.innerHTML=holidays.map(h=>'<section class="holiday-block"><div class="holiday-block-title">'+escapeHtml(h.date)+' · '+escapeHtml(h.title)+'</div>'+services.map(service=>'<div class="holiday-service-row"><div class="holiday-service-label">'+escapeHtml(service)+'</div><div class="holiday-name-lines"><div class="holiday-name-line"></div><div class="holiday-name-line"></div></div></div>').join('')+'</section>').join('');
 }
 function printHolidayPreferences(){
   renderHolidayPrintList();
