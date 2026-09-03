@@ -72,7 +72,7 @@
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v4</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v5</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -85,7 +85,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v4</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v5</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -164,7 +164,7 @@
     <div id="joker-report-container" class="joker-report">
       <h2 style="margin-top:0">Jokerdienste – Auswertung für die Buchhaltung</h2><div class="joker-import-box no-print">
 <h3>Zusätzliche Jokerlisten</h3>
-<p>Hier kannst du zusätzliche Monatslisten mit versetzten Mitarbeitenden hochladen. Gezählt wird ausschließlich, wie oft bei einem Namen <strong>JF</strong> oder <strong>JSD</strong> steht. Das Datum wird für die Zählung nicht berücksichtigt. Alle anderen Ansichten bleiben unverändert.</p>
+<p>Hier kannst du die Joker-Monatsliste hochladen. Sobald für einen Monat eine solche Liste vorhanden ist, verwendet die Joker-Auswertung <strong>ausschließlich diese hochgeladene Liste</strong>. JF/JSD aus dem normalen Hauptdienstplan werden für diesen Monat dann nicht zusätzlich gezählt. Alle anderen Ansichten bleiben unverändert.</p>
 <div class="joker-import-actions">
 <input type="file" id="joker-extra-upload" accept=".xlsx,.xls" multiple>
 <button class="btn-secondary" type="button" onclick="clearJokerSupplement()">Zusatzdaten löschen</button>
@@ -817,6 +817,7 @@ function getSelectedJokerMonthIds(){
 function calculateJokerReport(monthIds=getSelectedJokerMonthIds()){
   const stats={};
   let totalJF=0,totalJSD=0;
+  const supplementStore=getJokerSupplementStore();
 
   function count(name,code){
     code=String(code||'').trim().toUpperCase();
@@ -829,18 +830,22 @@ function calculateJokerReport(monthIds=getSelectedJokerMonthIds()){
     if(code==='JF')totalJF++;else totalJSD++;
   }
 
-  // Normale gespeicherte Dienstpläne:
   monthIds.forEach(id=>{
-    Object.values(rosterArchive[id]?.rosterData||{}).forEach(shifts=>{
-      (shifts||[]).forEach(shift=>count(shift.name,shift.dienst));
-    });
-  });
+    const supplementEntries=supplementStore[id]?.entries||[];
 
-  // Zusatzlisten:
-  // Jede Zeile mit JF/JSD zählt genau einmal.
-  // Das Datum wird hierfür ausdrücklich NICHT benötigt.
-  getSupplementEntriesForMonths(monthIds).forEach(entry=>{
-    count(entry.name,entry.dienst);
+    if(supplementEntries.length){
+      // Sobald für einen Monat eine Zusatzliste hochgeladen wurde,
+      // wird für diesen Monat AUSSCHLIESSLICH diese Liste für die
+      // Joker-Auswertung verwendet. Joker aus dem Hauptdienstplan
+      // werden für diesen Monat nicht zusätzlich gezählt.
+      supplementEntries.forEach(entry=>count(entry.name,entry.dienst));
+    }else{
+      // Nur wenn für den Monat keine Zusatzliste vorhanden ist,
+      // werden die JF/JSD aus dem normalen Hauptdienstplan ausgewertet.
+      Object.values(rosterArchive[id]?.rosterData||{}).forEach(shifts=>{
+        (shifts||[]).forEach(shift=>count(shift.name,shift.dienst));
+      });
+    }
   });
 
   const rows=Object.values(stats).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'de'));
