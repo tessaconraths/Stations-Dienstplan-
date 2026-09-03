@@ -56,7 +56,7 @@
     .joker-summary-card{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:12px}
     .joker-summary-card strong{display:block;font-size:1.45rem;color:#065f46;margin-top:3px}
     .joker-report table td:first-child{text-align:left;font-weight:600}
-    .joker-total-row{font-weight:800;background:#f1f5f9}
+    .joker-total-row{font-weight:800;background:#f1f5f9}.joker-import-box{margin:0 0 16px;padding:14px;background:#f8fafc;border:1px solid var(--border);border-radius:9px}.joker-import-box h3{margin:0 0 6px;font-size:1rem}.joker-import-box p{margin:0 0 10px;color:#475569;font-size:.86rem;line-height:1.4}.joker-import-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.joker-import-status{margin-top:8px;font-size:.82rem;color:#475569}
 
     .login-link{width:100%;margin-top:8px;background:transparent!important;color:var(--primary)!important;padding:7px!important;text-decoration:underline;font-weight:600}
     .password-modal{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.58);display:grid;place-items:center;padding:18px}
@@ -72,7 +72,7 @@
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil 3</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -85,7 +85,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 27.08.2026 – Stabil 3</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -162,7 +162,15 @@
     <div id="week-view-container" class="week-view"></div>
     <div id="month-view-container" class="month-view"><table><thead><tr id="month-header-row"><th>Mitarbeiter</th></tr></thead><tbody id="month-body-rows"></tbody></table></div>
     <div id="joker-report-container" class="joker-report">
-      <h2 style="margin-top:0">Jokerdienste – Auswertung für die Buchhaltung</h2>
+      <h2 style="margin-top:0">Jokerdienste – Auswertung für die Buchhaltung</h2><div class="joker-import-box no-print">
+<h3>Zusätzliche Jokerlisten</h3>
+<p>Hier kannst du zusätzliche Orbis-Exceldateien mit versetzten Mitarbeitenden hochladen. Es werden ausschließlich <strong>JF</strong> und <strong>JSD</strong> übernommen. Alle anderen Ansichten bleiben unverändert.</p>
+<div class="joker-import-actions">
+<input type="file" id="joker-extra-upload" accept=".xlsx,.xls" multiple>
+<button class="btn-secondary" type="button" onclick="clearJokerSupplement()">Zusatzdaten löschen</button>
+</div>
+<div id="joker-extra-status" class="joker-import-status">Noch keine zusätzlichen Jokerlisten gespeichert.</div>
+</div>
       <div class="joker-report-toolbar no-print">
         <div class="form-field"><label>Von Monat</label><select id="joker-from-month" onchange="renderJokerReport()"></select></div>
         <div class="form-field"><label>Bis Monat</label><select id="joker-to-month" onchange="renderJokerReport()"></select></div>
@@ -309,6 +317,17 @@ async function initializeAuth(){
 
 function getRosterMonthIds(){return Object.keys(rosterArchive).filter(id=>/^\d{4}-\d{2}$/.test(id)).sort()}
 
+function getJokerSupplementStore(){
+  if(!rosterArchive.__jokerSupplement||typeof rosterArchive.__jokerSupplement!=='object')rosterArchive.__jokerSupplement={};
+  return rosterArchive.__jokerSupplement;
+}
+function getMonthLabelFromId(id){
+  const months=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const m=String(id||'').match(/^(\d{4})-(\d{2})$/);
+  return m?(months[Number(m[2])-1]||m[2])+' '+m[1]:id;
+}
+
+
 async function reloadArchiveFromSupabase(){
     setSyncStatus('Lade …');
     try{
@@ -362,7 +381,7 @@ function normalizeArchive(){
         }));
         validateAssignmentsForRoster(r);
     });
-}
+getJokerSupplementStore();}
 async function saveArchiveToSupabase(){if(!currentUser)return;setSyncStatus('Speichere …');const {error}=await supabaseClient.from('dienstplan').update({archiv:rosterArchive,updated_at:new Date().toISOString()}).eq('id',1);if(error){setSyncStatus('Speicherfehler',true);alert('Speichern fehlgeschlagen:\n'+error.message);throw error}setSyncStatus('Gespeichert: '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}))}
 function queueSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveArchiveToSupabase().catch(console.error),250)}
 
@@ -633,14 +652,91 @@ async function saveAllComments(){
 }
 
 
-function getJokerMonthIds(){return Object.keys(rosterArchive).filter(id=>/^\d{4}-\d{2}$/.test(id)).sort()}
+
+function initJokerSupplementUpload(){
+  const input=document.getElementById('joker-extra-upload');
+  if(input&&!input.dataset.bound){
+    input.dataset.bound='1';
+    input.addEventListener('change',handleJokerSupplementUpload);
+  }
+  renderJokerSupplementStatus();
+}
+async function handleJokerSupplementUpload(event){
+  const files=Array.from(event.target.files||[]);
+  if(!files.length)return;
+  try{
+    const grouped={};
+    for(const file of files){
+      const wb=XLSX.read(new Uint8Array(await file.arrayBuffer()),{type:'array'});
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});
+      let currentDate=null;
+      rows.forEach(row=>{
+        const v1=row[1]?String(row[1]).trim():'';
+        const name=row[3]?String(row[3]).trim():'';
+        const code=row[6]?String(row[6]).trim().toUpperCase():'';
+        if(v1.includes(' ; ')&&/^\d{2}\.\d{2}\.\d{4}/.test(v1)){currentDate=v1.split(' ; ')[0].trim();return}
+        if(!currentDate||!name||name==='Name'||(code!=='JF'&&code!=='JSD'))return;
+        const monthId=getRosterMonthId(currentDate);
+        grouped[monthId]??=[];
+        grouped[monthId].push({date:currentDate,name,dienst:code});
+      });
+    }
+    const ids=Object.keys(grouped).filter(Boolean).sort();
+    if(!ids.length){alert('Keine JF- oder JSD-Dienste erkannt.');return}
+    const store=getJokerSupplementStore();
+    let total=0;
+    for(const id of ids){
+      const map=new Map();
+      grouped[id].forEach(x=>map.set(x.date+'|'+x.name.toLowerCase()+'|'+x.dienst,x));
+      const entries=Array.from(map.values());
+      if(store[id]?.entries?.length&&!confirm('Für '+getMonthLabelFromId(id)+' existieren bereits Zusatzdaten. Ersetzen?'))continue;
+      store[id]={monthId:id,label:getMonthLabelFromId(id),importedAt:new Date().toISOString(),entries};
+      total+=entries.length;
+    }
+    await saveArchiveToSupabase();
+    fillJokerMonthSelectors();
+    renderJokerSupplementStatus();
+    renderJokerReport();
+    alert('Zusätzliche Jokerdaten gespeichert: '+total+' Einträge.');
+  }catch(err){
+    console.error(err);
+    alert('Zusätzliche Jokerliste konnte nicht eingelesen werden:\n'+(err?.message||String(err)));
+  }finally{event.target.value=''}
+}
+function getSupplementEntriesForMonths(monthIds){
+  const store=getJokerSupplementStore();
+  return monthIds.flatMap(id=>store[id]?.entries||[]);
+}
+function renderJokerSupplementStatus(){
+  const el=document.getElementById('joker-extra-status');if(!el)return;
+  const store=getJokerSupplementStore();
+  const ids=Object.keys(store).filter(id=>/^\d{4}-\d{2}$/.test(id));
+  const count=ids.reduce((s,id)=>s+(store[id]?.entries?.length||0),0);
+  el.textContent=count?'Zusatzdaten: '+count+' JF/JSD-Einträge aus '+ids.length+' Monat(en).':'Noch keine zusätzlichen Jokerlisten gespeichert.';
+}
+async function clearJokerSupplement(){
+  const store=getJokerSupplementStore();
+  if(!Object.keys(store).length){alert('Keine Zusatzdaten vorhanden.');return}
+  if(!confirm('Alle zusätzlich hochgeladenen Jokerdaten löschen? Die normalen Dienstpläne bleiben unverändert.'))return;
+  rosterArchive.__jokerSupplement={};
+  await saveArchiveToSupabase();
+  fillJokerMonthSelectors();
+  renderJokerSupplementStatus();
+  renderJokerReport();
+}
+
+function getJokerMonthIds(){
+  const ids=new Set(getRosterMonthIds());
+  Object.keys(getJokerSupplementStore()).filter(id=>/^\d{4}-\d{2}$/.test(id)).forEach(id=>ids.add(id));
+  return Array.from(ids).sort();
+}
 function fillJokerMonthSelectors(){
   const ids=getJokerMonthIds(),from=document.getElementById('joker-from-month'),to=document.getElementById('joker-to-month');
   if(!from||!to)return;
   const oldFrom=from.value,oldTo=to.value;
   from.innerHTML='';to.innerHTML='';
   ids.forEach(id=>{
-    const label=rosterArchive[id]?.label||id;
+    const label=rosterArchive[id]?.label||getJokerSupplementStore()[id]?.label||getMonthLabelFromId(id);
     [from,to].forEach(sel=>{const o=document.createElement('option');o.value=id;o.textContent=label;sel.appendChild(o)})
   });
   if(!ids.length)return;
@@ -654,22 +750,24 @@ function getSelectedJokerMonthIds(){
   return a<=b?ids.slice(a,b+1):ids.slice(b,a+1);
 }
 function calculateJokerReport(monthIds=getSelectedJokerMonthIds()){
-  const stats={};let totalJF=0,totalJSD=0;
+  const stats={},seen=new Set();let totalJF=0,totalJSD=0;
+  function add(date,name,code){
+    code=String(code||'').trim().toUpperCase();name=String(name||'').trim();
+    if(!date||!name||(code!=='JF'&&code!=='JSD'))return;
+    const key=date+'|'+name.toLowerCase()+'|'+code;
+    if(seen.has(key))return;seen.add(key);
+    stats[name]??={name,JF:0,JSD:0,total:0};
+    stats[name][code]++;stats[name].total++;
+    if(code==='JF')totalJF++;else totalJSD++;
+  }
   monthIds.forEach(id=>{
-    const r=rosterArchive[id];
-    Object.values(r?.rosterData||{}).forEach(shifts=>(shifts||[]).forEach(shift=>{
-      const code=String(shift.dienst||'').trim().toUpperCase();
-      if(code!=='JF'&&code!=='JSD')return;
-      const name=String(shift.name||'').trim()||'Unbekannt';
-      stats[name]??={name,JF:0,JSD:0,total:0};
-      stats[name][code]++;stats[name].total++;
-      if(code==='JF')totalJF++;else totalJSD++;
-    }));
+    Object.entries(rosterArchive[id]?.rosterData||{}).forEach(([date,shifts])=>(shifts||[]).forEach(x=>add(date,x.name,x.dienst)));
   });
+  getSupplementEntriesForMonths(monthIds).forEach(x=>add(x.date,x.name,x.dienst));
   const rows=Object.values(stats).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'de'));
   return{rows,totalJF,totalJSD,total:totalJF+totalJSD};
 }
-function renderJokerReport(){
+function renderJokerReport(){initJokerSupplementUpload();
   fillJokerMonthSelectors();
   const monthIds=getSelectedJokerMonthIds(),result=calculateJokerReport(monthIds),body=document.getElementById('joker-report-body');
   if(!body)return;
