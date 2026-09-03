@@ -72,7 +72,7 @@
 <body>
   <section id="login-screen" class="login-screen">
     <div class="login-card">
-      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v2</small>
+      <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v4</small>
       <p>Bitte mit dem freigegebenen Konto anmelden.</p>
       <input id="login-email" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input id="login-password" type="password" placeholder="Passwort" autocomplete="current-password">
@@ -85,7 +85,7 @@
   <main id="app" class="hidden">
     <div class="header">
       <div>
-        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v2</small>
+        <h1>Stations-Dienstplan</h1><small style="display:block;color:#64748b;margin-top:3px;">Version 03.09.2026 – Joker-Zusatzlisten v4</small>
         <small id="current-date-display">Dienstplan wird geladen …</small>
       </div>
       <div class="nav-buttons no-print">
@@ -164,7 +164,7 @@
     <div id="joker-report-container" class="joker-report">
       <h2 style="margin-top:0">Jokerdienste – Auswertung für die Buchhaltung</h2><div class="joker-import-box no-print">
 <h3>Zusätzliche Jokerlisten</h3>
-<p>Hier kannst du zusätzliche Orbis-Exceldateien mit versetzten Mitarbeitenden hochladen. Es werden ausschließlich <strong>JF</strong> und <strong>JSD</strong> übernommen. Alle anderen Ansichten bleiben unverändert.</p>
+<p>Hier kannst du zusätzliche Monatslisten mit versetzten Mitarbeitenden hochladen. Gezählt wird ausschließlich, wie oft bei einem Namen <strong>JF</strong> oder <strong>JSD</strong> steht. Das Datum wird für die Zählung nicht berücksichtigt. Alle anderen Ansichten bleiben unverändert.</p>
 <div class="joker-import-actions">
 <input type="file" id="joker-extra-upload" accept=".xlsx,.xls" multiple>
 <button class="btn-secondary" type="button" onclick="clearJokerSupplement()">Zusatzdaten löschen</button>
@@ -664,69 +664,86 @@ function initJokerSupplementUpload(){
 async function handleJokerSupplementUpload(event){
   const files=Array.from(event.target.files||[]);
   if(!files.length)return;
+
   try{
     const grouped={};
+    let recognized=0;
+
     for(const file of files){
-      const wb=XLSX.read(new Uint8Array(await file.arrayBuffer()),{type:'array'});
+      const data=new Uint8Array(await file.arrayBuffer());
+      const wb=XLSX.read(data,{type:'array'});
+
       for(const sheetName of wb.SheetNames){
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,raw:true});
-        let currentDate=null;
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{
+          header:1,
+          raw:false,
+          defval:''
+        });
 
-        rows.forEach(row=>{
-          // Unterstützt sowohl den normalen ORBIS-Export als auch
-          // "Dienstplan Heimaufsicht"-Listen wie die hochgeladene Datei.
-          const cells=(row||[]).map(v=>v===undefined||v===null?'':String(v).trim());
+        // Der Monat wird nur einmal für die Zuordnung der Auswertung ermittelt.
+        // Die einzelnen Datumszeilen spielen für die Zählung KEINE Rolle.
+        let monthId=null;
 
-          // Datum flexibel in der gesamten Zeile erkennen:
-          // z.B. "01.02.2026 ; ..." oder "Datum: 01.02.2026"
-          for(const cell of cells){
-            const m=cell.match(/(?:Datum:\s*)?(\d{2}\.\d{2}\.\d{4})/i);
-            if(m){currentDate=m[1];break;}
-          }
-          if(!currentDate)return;
-
-          // JF/JSD flexibel in der gesamten Zeile suchen.
-          const codeIndex=cells.findIndex(v=>/^(JF|JSD)$/i.test(v));
-          if(codeIndex<0)return;
-          const code=cells[codeIndex].toUpperCase();
-
-          // Name: bevorzugt Spalte D (Index 3), wie in beiden bekannten Exporten.
-          // Fallback: erstes plausibles Textfeld links vom Dienstkürzel.
-          let name=cells[3]||'';
-          if(!name||/^(Name|Qualifikationen|Kürzel|Datum:)/i.test(name)){
-            for(let i=codeIndex-1;i>=0;i--){
-              const candidate=cells[i];
-              if(candidate && candidate.length>2 &&
-                 !/^(Pflegefachperson|Altenpfleger|Gesundheits-|Datum:|Abteilung:|Name|Qualifikationen)$/i.test(candidate)){
-                name=candidate;break;
-              }
+        // 1. Bevorzugt aus der Überschrift, z.B.
+        // "Dienstplan Heimaufsicht (01.02.2026 - 28.02.2026)"
+        for(const row of rows.slice(0,15)){
+          for(const cell of row){
+            const m=String(cell||'').match(/(\d{2})\.(\d{2})\.(\d{4})/);
+            if(m){
+              monthId=m[3]+'-'+m[2];
+              break;
             }
           }
-          name=String(name||'').trim();
-          if(!name||name==='Name')return;
+          if(monthId)break;
+        }
 
-          const monthId=getRosterMonthId(currentDate);
-          if(!monthId)return;
+        if(!monthId){
+          alert('Der Monat der Zusatzliste konnte nicht bestimmt werden. Bitte eine Monatsliste mit Monatsangabe in der Überschrift verwenden.');
+          continue;
+        }
+
+        rows.forEach((row,rowIndex)=>{
+          // In dieser Heimaufsicht-Liste:
+          // D = Name, F = Kürzel.
+          // Datum wird bewusst NICHT ausgewertet.
+          const name=String(row[3]??'').trim();
+          const code=String(row[5]??'').trim().toUpperCase();
+
+          if(!name || name==='Name')return;
+          if(code!=='JF' && code!=='JSD')return;
+
           grouped[monthId]??=[];
-          grouped[monthId].push({date:currentDate,name,dienst:code});
+          grouped[monthId].push({
+            name,
+            dienst:code,
+            sourceRow:rowIndex+1
+          });
+          recognized++;
         });
       }
     }
 
-    const ids=Object.keys(grouped).filter(Boolean).sort();
+    const ids=Object.keys(grouped).sort();
+
     if(!ids.length){
-      alert('Keine JF- oder JSD-Dienste erkannt. Die Datei wurde gelesen, enthielt aber keine passenden Jokerkürzel.');
+      alert('Keine JF- oder JSD-Dienste erkannt. Es werden ausschließlich Name aus Spalte D und Kürzel JF/JSD aus Spalte F gezählt.');
       return;
     }
 
     const store=getJokerSupplementStore();
     let total=0;
-    for(const id of ids){
-      const map=new Map();
-      grouped[id].forEach(x=>map.set(x.date+'|'+x.name.toLowerCase()+'|'+x.dienst,x));
-      const entries=Array.from(map.values());
 
-      if(store[id]?.entries?.length&&!confirm('Für '+getMonthLabelFromId(id)+' existieren bereits Zusatzdaten. Ersetzen?'))continue;
+    for(const id of ids){
+      const entries=grouped[id];
+
+      if(store[id]?.entries?.length){
+        const replace=confirm(
+          'Für '+getMonthLabelFromId(id)+' existieren bereits Zusatzdaten.\n\n'+
+          'OK = bisherige Zusatzliste ersetzen\n'+
+          'Abbrechen = vorhandene Zusatzdaten behalten'
+        );
+        if(!replace)continue;
+      }
 
       store[id]={
         monthId:id,
@@ -741,7 +758,9 @@ async function handleJokerSupplementUpload(event){
     fillJokerMonthSelectors();
     renderJokerSupplementStatus();
     renderJokerReport();
-    alert('Zusätzliche Jokerdaten gespeichert: '+total+' JF/JSD-Einträge.');
+
+    alert('Zusätzliche Jokerliste erfolgreich eingelesen.\n\nGezählt: '+total+' JF/JSD-Dienste.');
+
   }catch(err){
     console.error(err);
     alert('Zusätzliche Jokerliste konnte nicht eingelesen werden:\n'+(err?.message||String(err)));
@@ -796,20 +815,34 @@ function getSelectedJokerMonthIds(){
   return a<=b?ids.slice(a,b+1):ids.slice(b,a+1);
 }
 function calculateJokerReport(monthIds=getSelectedJokerMonthIds()){
-  const stats={},seen=new Set();let totalJF=0,totalJSD=0;
-  function add(date,name,code){
-    code=String(code||'').trim().toUpperCase();name=String(name||'').trim();
-    if(!date||!name||(code!=='JF'&&code!=='JSD'))return;
-    const key=date+'|'+name.toLowerCase()+'|'+code;
-    if(seen.has(key))return;seen.add(key);
+  const stats={};
+  let totalJF=0,totalJSD=0;
+
+  function count(name,code){
+    code=String(code||'').trim().toUpperCase();
+    name=String(name||'').trim();
+    if(!name||(code!=='JF'&&code!=='JSD'))return;
+
     stats[name]??={name,JF:0,JSD:0,total:0};
-    stats[name][code]++;stats[name].total++;
+    stats[name][code]++;
+    stats[name].total++;
     if(code==='JF')totalJF++;else totalJSD++;
   }
+
+  // Normale gespeicherte Dienstpläne:
   monthIds.forEach(id=>{
-    Object.entries(rosterArchive[id]?.rosterData||{}).forEach(([date,shifts])=>(shifts||[]).forEach(x=>add(date,x.name,x.dienst)));
+    Object.values(rosterArchive[id]?.rosterData||{}).forEach(shifts=>{
+      (shifts||[]).forEach(shift=>count(shift.name,shift.dienst));
+    });
   });
-  getSupplementEntriesForMonths(monthIds).forEach(x=>add(x.date,x.name,x.dienst));
+
+  // Zusatzlisten:
+  // Jede Zeile mit JF/JSD zählt genau einmal.
+  // Das Datum wird hierfür ausdrücklich NICHT benötigt.
+  getSupplementEntriesForMonths(monthIds).forEach(entry=>{
+    count(entry.name,entry.dienst);
+  });
+
   const rows=Object.values(stats).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,'de'));
   return{rows,totalJF,totalJSD,total:totalJF+totalJSD};
 }
